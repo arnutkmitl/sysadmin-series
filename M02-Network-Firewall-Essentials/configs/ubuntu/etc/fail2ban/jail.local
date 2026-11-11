@@ -1,0 +1,12 @@
+# /etc/fail2ban/jail.local บน Ubuntu
+[DEFAULT]
+banaction = ufw
+bantime = 1h
+findtime = 10m
+maxretry = 3
+ignoreip = 127.0.0.1/8 ::1 192.168.56.0/24 192.168.57.1
+
+[sshd]
+enabled = true
+port = 2222
+backend = systemd
