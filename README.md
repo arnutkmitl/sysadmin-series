@@ -2,7 +2,7 @@
 
 ไฟล์ประกอบหนังสือชุด SysAdmin Pocket Series โดย ดร.อาณัติ รัตนถิรกุล (อ.หมวกแดง) สำนักพิมพ์ SysAdmin Knowledge Press
 แต่ละเล่มมีโฟลเดอร์ของตัวเอง ภายในมีคำสั่งทุกบรรทัดในเล่ม ไฟล์ตั้งค่า และสคริปต์ เรียงตามบทเดียวกับหนังสือ
-ตอนนี้ดาวน์โหลดได้ 5 จาก 16 เล่ม
+ตอนนี้ดาวน์โหลดได้ 5 จาก 17 เล่ม
 
 ## รายชื่อเล่ม
 
@@ -15,15 +15,16 @@
 | M05 | Web Server: Apache & Nginx ตั้งเว็บจริงใน 1 วัน | [`M05-Web-Server-Apache-Nginx/`](M05-Web-Server-Apache-Nginx/) | ดาวน์โหลดได้ |
 | M06 | Docker & Container Essentials: จาก Install ถึง Production ใน 1 วัน | `M06-Docker-Container-Essentials/` | กำลังจัดทำ |
 | M07 | Database Server: MySQL & PostgreSQL ตั้ง DB จริงใน 1 วัน | `M07-Database-Server-MySQL-PostgreSQL/` | กำลังจัดทำ |
-| M08 | SSL & Security Hardening: ล็อก Server ให้แน่นใน 1 วัน | `M08-SSL-Security-Hardening/` | กำลังจัดทำ |
-| M09 | Proxmox VE: สร้าง Virtual Lab ใน 1 วัน | `M09-Proxmox-VE-Virtualization/` | กำลังจัดทำ |
-| M10 | Node-RED: IoT Gateway & Automation ใน 1 วัน | `M10-Node-RED-IoT-Gateway/` | กำลังจัดทำ |
-| M11 | IoT Sensor to Cloud: จาก ESP32 ถึง Dashboard ใน 1 วัน | `M11-IoT-Sensor-to-Cloud/` | กำลังจัดทำ |
+| M08 | DNS & Essential Network Services: ตั้ง DNS Server ใน 1 วัน | `M08-DNS-Essential-Network-Services/` | กำลังจัดทำ |
+| M09 | VPN Server: เชื่อมเครือข่ายปลอดภัยใน 1 วัน | `M09-VPN-Server-WireGuard-OpenVPN/` | กำลังจัดทำ |
+| M10 | SSL & Security Hardening: ล็อก Server ให้แน่นใน 1 วัน | `M10-SSL-Security-Hardening/` | กำลังจัดทำ |
+| M11 | Proxmox VE: สร้าง Virtual Lab ใน 1 วัน | `M11-Proxmox-VE-Virtualization/` | กำลังจัดทำ |
 | M12 | CI/CD & Git Essentials: Deploy อัตโนมัติใน 1 วัน | `M12-CICD-Git-Essentials/` | กำลังจัดทำ |
-| M13 | Monitoring with Grafana & Prometheus: สร้างระบบ Monitoring จาก 0 ใน 1 วัน | `M13-Monitoring-Grafana-Prometheus/` | กำลังจัดทำ |
-| M14 | Ansible Automation: จัดการ Server 10 เครื่องเหมือน 1 เครื่อง | `M14-Ansible-Automation/` | กำลังจัดทำ |
-| M15 | Reverse Proxy & Load Balancer: Nginx, HAProxy, Traefik ครบใน 1 วัน | `M15-Reverse-Proxy-Load-Balancer/` | กำลังจัดทำ |
-| M16 | Backup & Disaster Recovery: อย่าให้ข้อมูลหายเป็นอันขาด | `M16-Backup-Disaster-Recovery/` | กำลังจัดทำ |
+| M13 | Mail Server: ตั้งระบบอีเมลองค์กรใน 1 วัน | `M13-Mail-Server-Postfix-Dovecot/` | กำลังจัดทำ |
+| M14 | Monitoring with Grafana & Prometheus: สร้างระบบ Monitoring จาก 0 ใน 1 วัน | `M14-Monitoring-Grafana-Prometheus/` | กำลังจัดทำ |
+| M15 | Ansible Automation: จัดการ Server 10 เครื่องเหมือน 1 เครื่อง | `M15-Ansible-Automation/` | กำลังจัดทำ |
+| M16 | Reverse Proxy & Load Balancer: Nginx, HAProxy, Traefik ครบใน 1 วัน | `M16-Reverse-Proxy-Load-Balancer/` | กำลังจัดทำ |
+| M17 | Backup & Disaster Recovery: อย่าให้ข้อมูลหายเป็นอันขาด | `M17-Backup-Disaster-Recovery/` | กำลังจัดทำ |
 
 ## วิธีดาวน์โหลด
 
