@@ -1,0 +1,5 @@
+# servers.yaml
+servers:
+  - {host: 192.168.56.10, port: 2222, user: admin, role: web}
+  - {host: 192.168.56.20, port: 2222, user: admin, role: app}
+  - {host: 192.168.56.30, port: 2222, user: admin, role: db}

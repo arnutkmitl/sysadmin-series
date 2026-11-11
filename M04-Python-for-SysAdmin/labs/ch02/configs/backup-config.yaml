@@ -1,0 +1,7 @@
+# backup-config.yaml
+dest: /backup/python
+keep_days: 7
+sources:
+  - /etc/ssh
+  - /etc/chrony.conf
+  - /home/admin/python-admin/configs

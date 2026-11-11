@@ -1,0 +1,4 @@
+# ~/python-admin/ruff.toml
+[lint]
+select = ["E", "F", "W"]     # error, pyflakes และ warning
+ignore = ["E501"]            # ไม่จำกัดความยาวบรรทัด

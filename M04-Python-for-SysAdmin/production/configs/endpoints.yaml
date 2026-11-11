@@ -1,0 +1,9 @@
+# endpoints.yaml
+slow_seconds: 3
+endpoints:
+  - name: Python.org
+    url: https://www.python.org
+  - name: GitHub API
+    url: https://api.github.com
+  - name: App (client)
+    url: http://192.168.56.20:8080/health

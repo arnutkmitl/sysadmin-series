@@ -1,0 +1,12 @@
+# monitor-config.yaml ค่าตั้งของ server-monitor, log-analyzer และ user-report
+limits:            # เตือนเมื่อใช้ตั้งแต่กี่เปอร์เซ็นต์
+  cpu: 90
+  ram: 90
+  disk: 85
+disks: [/, /boot]
+services: [sshd, crond, chronyd, nginx]
+log_analyzer:
+  access_log: /var/log/nginx/access.log
+  top: 5
+user_report:
+  sudo_group: wheel          # Ubuntu ใช้ sudo

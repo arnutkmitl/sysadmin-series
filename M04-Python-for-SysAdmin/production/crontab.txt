@@ -1,0 +1,5 @@
+# บรรทัดของ admin ใส่ด้วย crontab -e, บรรทัดของ root ใส่ด้วย sudo crontab -e (บทที่ 6 หัวข้อ cron)
+*/5 * * * * /home/admin/python-admin/.venv/bin/python /home/admin/python-admin/scripts/server-monitor.py >> /home/admin/python-admin/logs/cron.log 2>&1
+* * * * *   /home/admin/python-admin/.venv/bin/python /home/admin/python-admin/scripts/api-health-check.py >> /home/admin/python-admin/logs/cron.log 2>&1
+0 6 * * *   /home/admin/python-admin/.venv/bin/python /home/admin/python-admin/scripts/log-analyzer.py >> /home/admin/python-admin/logs/cron.log 2>&1
+0 7 * * 1   /home/admin/python-admin/.venv/bin/python /home/admin/python-admin/scripts/user-report.py >> /home/admin/python-admin/logs/cron.log 2>&1

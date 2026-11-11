@@ -1,0 +1,12 @@
+# alert-config.yaml (chmod 600)
+line:
+  token: "ค่า Channel access token แบบ long-lived"
+  to: "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+slack:
+  webhook: ""                 # https://hooks.slack.com/services/... ว่าง = ไม่ใช้
+email:
+  host: smtp.gmail.com
+  port: 587
+  user: alert@example.com
+  password: "app password 16 ตัวอักษร"
+  to: admin@example.com
