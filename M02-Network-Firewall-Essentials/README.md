@@ -4,7 +4,7 @@ SysAdmin Pocket Series M02 โดย ดร.อาณัติ รัตนถ�
 
 ชุดนี้รวมคำสั่งทุกบรรทัดในเล่มไว้ให้คัดลอกได้โดยไม่ต้องพิมพ์ตาม เรียงตามบทและหัวข้อเดียวกับในเล่ม
 ดาวน์โหลดได้ที่ https://github.com/arnutkmitl/sysadmin-series โฟลเดอร์ `M02-Network-Firewall-Essentials`
-รวมคำสั่ง Linux 231 คำสั่ง คำสั่งฝั่ง Windows 13 คำสั่ง และไฟล์ตั้งค่า 4 ไฟล์
+รวมคำสั่ง Linux 235 คำสั่ง คำสั่งฝั่ง Windows 13 คำสั่ง และไฟล์ตั้งค่า 4 ไฟล์
 
 ## วิธีใช้
 
@@ -55,7 +55,7 @@ SysAdmin Pocket Series M02 โดย ดร.อาณัติ รัตนถ�
 | `linux/ch07-final-project.sh` | โปรเจกต์จบเล่ม: Secure Network สำหรับ Web Server | 4 คำสั่ง |
 | `windows/ch07-final-project-host-pc.ps1` | โปรเจกต์จบเล่ม: Secure Network สำหรับ Web Server | 1 คำสั่ง |
 | `linux/app-c-subnet.sh` | ภาคผนวก ค Private IP และ Subnet Reference | 1 คำสั่ง |
-| `linux/app-d-resources.sh` | ภาคผนวก ง แหล่งเรียนรู้เพิ่มเติม | 4 คำสั่ง |
+| `linux/app-d-resources.sh` | ภาคผนวก ง แหล่งเรียนรู้เพิ่มเติม | 8 คำสั่ง |
 | `scripts/web01-handover.sh` | ชุดตรวจส่งมอบ server (บทที่ 7) รันได้ทั้งไฟล์ | - |
 
 ## รุ่นซอฟต์แวร์ที่ทดสอบ
