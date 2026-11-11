@@ -1,0 +1,26 @@
+# Stack 4: GitLab CE (ต้องการ RAM อย่างน้อย 4 GB)
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:19.5.4-ce.0
+    restart: unless-stopped
+    hostname: gitlab.lab.test
+    shm_size: 256m
+    ports:
+      - "8929:8929"
+      - "2424:22"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.lab.test:8929'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2424
+        puma['worker_processes'] = 0
+        sidekiq['concurrency'] = 10
+        prometheus_monitoring['enable'] = false
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+
+volumes:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:

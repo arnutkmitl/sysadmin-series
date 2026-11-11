@@ -1,0 +1,41 @@
+# Stack 5: Nextcloud + MariaDB + Redis
+services:
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED
+    environment:
+      MARIADB_DATABASE: nextcloud
+      MARIADB_USER: nextcloud
+      MARIADB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  redis:
+    image: redis:8.6
+    restart: unless-stopped
+
+  app:
+    image: nextcloud:35-apache
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8083}:80"
+    depends_on:
+      - db
+      - redis
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      REDIS_HOST: redis
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${TRUSTED_DOMAINS:-localhost}
+    volumes:
+      - nc_data:/var/www/html
+
+volumes:
+  db_data:
+  nc_data:

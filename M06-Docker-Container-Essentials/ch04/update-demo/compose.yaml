@@ -1,0 +1,6 @@
+services:
+  web:
+    image: nginx:${NGINX_TAG:-1.30.5}
+    restart: unless-stopped
+    ports:
+      - "8080:80"

@@ -1,0 +1,79 @@
+# รวม snippet ของภาคผนวก ข ไว้ในไฟล์เดียวเพื่อทดสอบ
+# ใช้: docker compose -f compose-snippets.yaml up -d
+services:
+  web:
+    image: nginx:1.30
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:80"
+    env_file:
+      - ./app.env
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 200
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks: [frontend, backend]
+
+  db:
+    image: mariadb:11.8
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [backend]
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 10s
+      retries: 10
+    networks: [backend]
+
+  pg:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: lab-only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      retries: 5
+    networks: [backend]
+
+  redis:
+    image: redis:8.6
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+    networks: [backend]
+
+networks:
+  frontend:
+  backend:
+    internal: true

@@ -1,0 +1,7 @@
+# Dockerfile.single: แบบ stage เดียว ใช้เทียบขนาด
+FROM node:26
+WORKDIR /app
+COPY . .
+RUN npm install && npm run build
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
