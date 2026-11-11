@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup /etc ทุกวันตี 2
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

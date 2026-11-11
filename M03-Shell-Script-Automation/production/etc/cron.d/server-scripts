@@ -1,0 +1,7 @@
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+0 * * * *    root server-health.sh     >> /var/log/scripts/cron.log 2>&1
+*/15 * * * * root disk-alert.sh        >> /var/log/scripts/cron.log 2>&1
+0 2 * * *    root backup-config.sh     >> /var/log/scripts/cron.log 2>&1
+0 3 * * *    root backup-database.sh   >> /var/log/scripts/cron.log 2>&1
+0 4 * * *    root log-rotate-custom.sh >> /var/log/scripts/cron.log 2>&1
+*/5 * * * *  root service-restart.sh   >> /var/log/scripts/cron.log 2>&1
