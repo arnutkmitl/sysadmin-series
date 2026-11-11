@@ -1,0 +1,12 @@
+# /etc/systemd/system/app.service
+[Unit]
+Description=Demo Node.js app
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /opt/app/app.js
+User=nobody
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
