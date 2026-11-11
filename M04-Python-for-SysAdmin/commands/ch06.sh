@@ -14,6 +14,8 @@ ruff check ~/python-admin/scripts
 sed -i 's/  disk: 85/  disk: 10/' ../configs/monitor-config.yaml
 ./server-monitor.py
 tail -1 ../logs/admin-toolkit.log
+./server-monitor.py
+grep server-monitor ../logs/state.json
 
 # ── 6.3 Script #2 multi-host-runner.py (ระดับยาก) ───────────
 # ⚠️ multi-host-runner รันคำสั่งที่พิมพ์บนทุกเครื่องในรายการทันทีโดยไม่ถามยืนยัน คำสั่งที่ลบหรือหยุดบริการจะกระทบทุกเครื่องพร้อมกัน ทดลองคำสั่งกับเครื่องเดียวด้วย --config ที่มีเครื่องเดียวก่อนทุกครั้ง
