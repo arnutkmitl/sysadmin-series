@@ -1,0 +1,26 @@
+; /var/named/example.com.zone
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.com. (
+                 2026111205 ; serial  ปีเดือนวัน + ครั้งที่แก้ในวันนั้น
+                 3600       ; refresh secondary ถามหาการเปลี่ยนแปลงทุก 1 ชั่วโมง
+                 900        ; retry   ถ้าถามไม่สำเร็จ ลองใหม่ทุก 15 นาที
+                 1209600    ; expire  ติดต่อ primary ไม่ได้ 14 วัน secondary เลิกตอบ
+                 300 )      ; negative TTL  เวลาที่จำคำตอบ "ไม่มีชื่อนี้"
+        IN  NS   ns1.example.com.
+        IN  NS   ns2.example.com.
+        IN  MX   10 mail.example.com.
+        IN  TXT  "v=spf1 mx -all"
+ns1     IN  A    192.168.56.50
+ns2     IN  A    192.168.56.51
+web     IN  A    192.168.56.20
+web     IN  AAAA 2001:db8:56::20
+www     IN  CNAME web
+docker  IN  A    192.168.56.30
+db1     IN  A    192.168.56.40
+db2     IN  A    192.168.56.41
+mail    IN  A    192.168.56.25
+nas     IN  A    192.168.56.60
+lan     IN  NS   ns1.example.com.
+lan     IN  NS   ns2.example.com.
+backup  IN  A    192.168.56.70
+files   IN  A    192.168.56.80

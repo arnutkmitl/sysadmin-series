@@ -1,0 +1,12 @@
+; /var/named/example.com.external.zone
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.com. (
+                 2026111204 3600 900 1209600 300 )
+        IN  NS   ns1.example.com.
+        IN  NS   ns2.example.com.
+        IN  MX   10 mail.example.com.
+        IN  TXT  "v=spf1 mx -all"
+ns1     IN  A    203.0.113.50
+ns2     IN  A    203.0.113.51
+www     IN  A    203.0.113.21
+mail    IN  A    203.0.113.25

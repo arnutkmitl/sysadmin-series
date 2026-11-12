@@ -1,0 +1,4 @@
+# ต่อท้าย /etc/chrony.conf บน ns1
+allow 10.8.0.0/24
+allow 192.168.56.0/24
+local stratum 10

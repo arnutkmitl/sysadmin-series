@@ -1,0 +1,7 @@
+; /var/named/dynamic/10.8.0.rev
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.com. (
+                 2026111201 3600 900 1209600 300 )
+        IN  NS   ns1.example.com.
+        IN  NS   ns2.example.com.
+1       IN  PTR  ns1.example.com.

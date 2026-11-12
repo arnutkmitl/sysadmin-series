@@ -1,0 +1,16 @@
+; /var/named/192.168.56.rev
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.com. (
+                 2026111204 3600 900 1209600 300 )
+        IN  NS   ns1.example.com.
+        IN  NS   ns2.example.com.
+20      IN  PTR  web.example.com.
+25      IN  PTR  mail.example.com.
+30      IN  PTR  docker.example.com.
+40      IN  PTR  db1.example.com.
+41      IN  PTR  db2.example.com.
+50      IN  PTR  ns1.example.com.
+51      IN  PTR  ns2.example.com.
+60      IN  PTR  nas.example.com.
+70      IN  PTR  backup.example.com.
+80      IN  PTR  files.example.com.
