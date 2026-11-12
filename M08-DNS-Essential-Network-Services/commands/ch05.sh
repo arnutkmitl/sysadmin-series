@@ -6,10 +6,11 @@ echo "ไฟล์รวมคำสั่ง ห้ามรันทั้ง�
 exit 1
 
 # ── ขั้นที่ 1 เพิ่ม server ใหม่ให้ครบทั้งสองทาง ─────────────
-sudo named-checkzone example.com /var/named/example.com.zone | tail -1
+echo "70      IN  PTR  backup.example.com." | sudo tee -a /var/named/192.168.56.rev
+sudo sed -i "s/2026111202 3600/2026111203 3600/" /var/named/192.168.56.rev
 sudo named-checkzone 56.168.192.in-addr.arpa /var/named/192.168.56.rev | tail -1
-sudo rndc reload example.com IN internal
 sudo rndc reload 56.168.192.in-addr.arpa IN internal
+dig @192.168.56.50 -x 192.168.56.70 +short
 
 # ── ขั้นที่ 2 ตรวจรับด้วย check-dns.sh ──────────────────────
 chmod +x check-dns.sh

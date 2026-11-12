@@ -15,7 +15,7 @@ SysAdmin Pocket Series M08 โดย ดร.อาณัติ รัตนถ�
 | `configs/ns2/etc/named.conf` | BIND secondary ของ ns2 ทั้งสอง view |
 | `configs/docker/pihole/compose.yaml` | Pi-hole บน Docker (หัวข้อ 2.3) |
 | `capstone/check-dns.sh` | script ตรวจรับโปรเจกต์จบเล่ม 42 ข้อจากสามเครื่อง |
-| `commands/chNN.sh` | คำสั่งที่พิมพ์ใน terminal ของแต่ละบท รวม 268 คำสั่ง ไม่ใช่สคริปต์ ให้คัดลอกทีละคำสั่ง |
+| `commands/chNN.sh` | คำสั่งที่พิมพ์ใน terminal ของแต่ละบท รวม 292 คำสั่ง ไม่ใช่สคริปต์ ให้คัดลอกทีละคำสั่ง |
 
 ## โปรเจกต์จบเล่ม
 

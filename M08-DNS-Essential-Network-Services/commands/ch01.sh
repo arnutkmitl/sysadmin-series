@@ -34,9 +34,14 @@ dig @192.168.56.50 example.com NS +short
 dig @192.168.56.50 www.rockylinux.org | grep -E "status|WARNING"
 
 # ── checkzone ผ่าน ไม่ได้แปลว่าถูก ──────────────────────────
-sudo named-checkzone example.com t2.zone
-sudo named-checkzone example.com t1.zone
-sudo named-checkzone -D example.com t1.zone 2>/dev/null | grep "^www"
+sudo cp /var/named/example.com.zone /tmp/t2.zone
+echo "www     IN  A    192.168.56.21" | sudo tee -a /tmp/t2.zone
+sudo named-checkzone example.com /tmp/t2.zone
+sudo cp /var/named/example.com.zone /tmp/t1.zone
+sudo sed -i "s/^www     IN  CNAME web$/www     IN  CNAME web.example.com/" /tmp/t1.zone
+sudo named-checkzone example.com /tmp/t1.zone
+sudo named-checkzone -D example.com /tmp/t1.zone 2>/dev/null | grep "^www"
+sudo rm /tmp/t1.zone /tmp/t2.zone
 
 # ── 1.4 Reverse Zone และ PTR ────────────────────────────────
 sudo chown root:named /var/named/192.168.56.rev
@@ -82,6 +87,10 @@ sudo rndc reload example.com
 dig @192.168.56.51 nas.example.com +short
 # บนเครื่อง ns2
 sudo journalctl -u named -o cat | grep -E "notify|transferred" | tail -2
+echo "60      IN  PTR  nas.example.com." | sudo tee -a /var/named/192.168.56.rev
+sudo sed -i "s/2026111201 3600/2026111202 3600/" /var/named/192.168.56.rev
+sudo rndc reload 56.168.192.in-addr.arpa
+dig @192.168.56.51 -x 192.168.56.60 +short
 
 # ── กล่อง Ubuntu ────────────────────────────────────────────
 sudo apt install -y bind9 bind9-utils bind9-dnsutils

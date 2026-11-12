@@ -30,6 +30,7 @@ sudo systemctl restart named
 dig @127.0.0.1 www.rockylinux.org | grep -E "status|Query time"
 
 # ── SERVFAIL จาก zone file ที่ผิด ───────────────────────────
+sudo sed -i "s/^mail    IN  A    203.0.113.25$/mail    IN  A    203.0.113.256/" /var/named/example.com.external.zone
 sudo rndc reload example.com IN external
 sudo journalctl -u named -o cat | grep external | tail -3
 # บนเครื่อง ns2
@@ -37,10 +38,17 @@ dig @192.168.56.50 www.example.com +short
 sudo systemctl restart named
 sudo journalctl -u named -o cat | grep "bad dotted quad" | tail -1
 grep ExecStartPre /usr/lib/systemd/system/named.service
+# ⚠️ ตรวจ zone ด้วย named-checkzone ทุกครั้งก่อน reload และอ่าน log หลัง reload ทุกครั้ง อย่าเชื่อว่า reload สำเร็จเพียงเพราะ dig ยังได้คำตอบ ถ้า restart ในสภาพนี้ named จะไม่ขึ้นทั้งตัว
+sudo sed -i "s/203.0.113.256/203.0.113.25/" /var/named/example.com.external.zone
+sudo named-checkzone example.com /var/named/example.com.external.zone | tail -1
+sudo systemctl start named
 
 # ── NXDOMAIN ทั้งที่เพิ่ม record แล้ว ───────────────────────
 # บนเครื่อง pc1
 dig backup.example.com | grep status
+echo "backup  IN  A    192.168.56.70" | sudo tee -a /var/named/example.com.zone
+sudo sed -i "s/2026111203 ; serial/2026111204 ; serial/" /var/named/example.com.zone
+sudo rndc reload example.com IN internal
 dig @192.168.56.50 backup.example.com +short
 # บนเครื่อง pc1
 dig backup.example.com | grep -E "status|SOA"

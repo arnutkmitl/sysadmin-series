@@ -15,6 +15,8 @@ sudo systemctl enable --now kea-dhcp4
 sudo ss -ulnp | grep ":67 "
 
 # ── ดูการแจก IP ─────────────────────────────────────────────
+# บนเครื่อง pc1
+sudo nmcli con up "Wired connection 1"
 sudo journalctl -u kea-dhcp4 -o cat | grep -E "DHCPDISCOVER|DHCPOFFER|DHCPREQUEST|LEASE_ALLOC|DHCPACK"
 sudo cat /var/lib/kea/kea-leases4.csv
 # บนเครื่อง pc1
@@ -43,6 +45,9 @@ tsig-keygen -a hmac-sha256 ddns-key | sudo tee /etc/named.ddns.key
 sudo chown root:named /etc/named.ddns.key
 sudo chmod 640 /etc/named.ddns.key
 sudo chown named:named /var/named/dynamic/lan.example.com.zone /var/named/dynamic/10.8.0.rev
+echo "lan     IN  NS   ns1.example.com." | sudo tee -a /var/named/example.com.zone
+echo "lan     IN  NS   ns2.example.com." | sudo tee -a /var/named/example.com.zone
+sudo sed -i "s/2026111202 ; serial/2026111203 ; serial/" /var/named/example.com.zone
 sudo named-checkconf && echo checkconf-ok
 sudo rndc reconfig
 sudo rndc reload example.com IN internal
@@ -110,10 +115,10 @@ cat /run/chrony-dhcp/enp0s9.sources
 # บนเครื่อง pc1
 sudo systemctl restart chronyd
 # บนเครื่อง pc1
-chronyc sources
+chronyc -n sources
 # บนเครื่อง pc1
 chronyc tracking | grep -E "Reference ID|Stratum|System time"
-sudo chronyc clients
+sudo chronyc -n clients
 # บนเครื่อง ns2
 sudo sed -i "s/^pool 2.rocky.pool.ntp.org iburst/server 192.168.56.50 iburst/" /etc/chrony.conf
 # บนเครื่อง ns2

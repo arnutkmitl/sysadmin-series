@@ -25,7 +25,6 @@ dig @127.0.0.1 dnssec-failed.org | grep -E "status|EDE"
 sudo systemctl restart unbound
 dig @127.0.0.1 www.rockylinux.org | grep -oE "status: [A-Z]+"
 dig @127.0.0.1 www.rockylinux.org +cd | grep -oE "status: [A-Z]+"
-echo "    harden-referral-path: no" | sudo tee -a /etc/unbound/conf.d/lan.conf
 sudo systemctl restart unbound
 dig @127.0.0.1 www.rockylinux.org | grep -oE "status: [A-Z]+|Query time: [0-9]+ msec"
 
@@ -47,6 +46,13 @@ dig @127.0.0.1 db2.example.com +short
 (tsig-keygen -a hmac-sha256 internal-xfer; tsig-keygen -a hmac-sha256 external-xfer) | sudo tee /etc/named.xfer.key
 sudo chown root:named /etc/named.xfer.key
 sudo chmod 640 /etc/named.xfer.key
+sudo scp -P 2222 /etc/named.xfer.key admin@192.168.56.51:/tmp/
+# บนเครื่อง ns2
+sudo install -o root -g named -m 640 /tmp/named.xfer.key /etc/named.xfer.key
+# บนเครื่อง ns2
+rm /tmp/named.xfer.key
+# บนเครื่อง ns2
+sudo ls -l /etc/named.xfer.key
 
 # ── view บน ns1 ─────────────────────────────────────────────
 sudo chown root:named /var/named/example.com.external.zone
