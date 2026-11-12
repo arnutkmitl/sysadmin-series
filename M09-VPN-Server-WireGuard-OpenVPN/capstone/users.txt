@@ -1,0 +1,21 @@
+# ชื่อ เลขท้าย IP ใน WireGuard (10.9.0.x)
+anan 11
+boonmee 12
+chalerm 13
+duangjai 14
+ekachai 15
+fasai 16
+kanya 17
+kittipong 18
+malee 19
+manop 20
+nipa 21
+nattapong 22
+orawan 23
+pornthip 24
+prasit 25
+ratana 26
+sakchai 27
+thida 28
+wanchai 29
+yupa 30

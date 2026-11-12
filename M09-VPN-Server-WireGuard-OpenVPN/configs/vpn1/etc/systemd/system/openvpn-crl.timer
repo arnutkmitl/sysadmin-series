@@ -1,0 +1,10 @@
+# /etc/systemd/system/openvpn-crl.timer
+[Unit]
+Description=Renew OpenVPN CRL monthly
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

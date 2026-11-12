@@ -1,0 +1,30 @@
+#!/bin/bash
+# /usr/local/bin/make-ovpn: สร้างไฟล์ .ovpn ของผู้ใช้หนึ่งคน จาก inline file ของ Easy-RSA
+#   sudo /usr/local/bin/make-ovpn somchai   ได้ไฟล์ /etc/openvpn/clients/somchai.ovpn
+set -euo pipefail
+name=${1:?usage: make-ovpn <name>}
+server=${SERVER:-192.168.56.90}
+pki=/etc/openvpn/easy-rsa/pki
+out=/etc/openvpn/clients
+inline=$pki/inline/private/$name.inline
+[ -r "$inline" ] || { echo "ไม่พบ $inline สร้าง certificate ก่อนด้วย build-client-full" >&2; exit 1; }
+umask 077
+mkdir -p "$out"
+{
+    cat <<CONF
+client
+dev tun
+remote $server 1194 udp
+remote $server 443 tcp
+server-poll-timeout 10
+nobind
+persist-tun
+remote-cert-tls server
+verb 3
+CONF
+    grep -v '^#' "$inline"
+    echo "<tls-crypt>"
+    cat /etc/openvpn/server/tc.key
+    echo "</tls-crypt>"
+} > "$out/$name.ovpn"
+echo "$out/$name.ovpn"

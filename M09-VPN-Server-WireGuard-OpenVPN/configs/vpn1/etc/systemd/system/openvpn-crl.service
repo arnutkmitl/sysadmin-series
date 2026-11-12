@@ -1,0 +1,8 @@
+# /etc/systemd/system/openvpn-crl.service
+[Unit]
+Description=Renew OpenVPN CRL
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /etc/openvpn/easy-rsa/easyrsa --pki=/etc/openvpn/easy-rsa/pki --batch gen-crl
+ExecStart=/usr/bin/install -m 644 /etc/openvpn/easy-rsa/pki/crl.pem /etc/openvpn/server/crl.pem
