@@ -83,7 +83,7 @@ dig @192.168.56.50 example.com AXFR | tail -1
 sudo sed -i -e "s/2026111201 3600/2026111202 3600/" -e "s/^www     IN  A    203.0.113.20/www     IN  A    203.0.113.21/" /var/named/example.com.external.zone
 sudo rndc reload example.com IN external
 # บนเครื่อง ns2
-sudo journalctl -u named -o cat | grep external | tail -3
+sudo journalctl -u named -o cat | grep -E "received notify|notify from|transferred serial" | grep external | tail -3
 # บนเครื่อง ns2
 sudo journalctl -u named -o cat | grep notify | tail -2
 # บนเครื่อง ns2

@@ -75,6 +75,9 @@ sudo journalctl -u named -o cat | grep "Transfer completed" | tail -1
 
 # ── Query log สำหรับตรวจสอบ ─────────────────────────────────
 sudo rndc querylog on
+dig @192.168.56.50 www.example.com +short
+# บนเครื่อง ns2
+dig @192.168.56.50 www.example.com +short
 sudo journalctl -u named -o cat | grep "query:" | tail -2
 sudo rndc querylog off
 
