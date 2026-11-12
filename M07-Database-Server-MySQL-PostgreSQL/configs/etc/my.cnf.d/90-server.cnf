@@ -1,0 +1,5 @@
+[mariadb]
+bind-address            = 192.168.56.40
+max_connections         = 200
+innodb_buffer_pool_size = 512M
+character-set-server    = utf8mb4
