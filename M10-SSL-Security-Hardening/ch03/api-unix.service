@@ -1,0 +1,12 @@
+# /etc/systemd/system/api.service  backend ทดสอบ ฟัง unix socket /run/api/api.sock (หัวข้อ 3.4)
+[Unit]
+Description=Lab API backend
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/api/unix_server.py
+RuntimeDirectory=api
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

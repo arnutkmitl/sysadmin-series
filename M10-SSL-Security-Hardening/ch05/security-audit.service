@@ -1,0 +1,10 @@
+# /etc/systemd/system/security-audit.service  รัน security-audit.sh แล้วเก็บผลใน journal (บทที่ 5)
+# ผลไปถึง log server ด้วย rsyslog ของหัวข้อ 4.3 ค้นด้วย SyslogIdentifier=security-audit
+[Unit]
+Description=Weekly security audit (30 checks)
+After=network-online.target nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/security-audit.sh -v
+SyslogIdentifier=security-audit

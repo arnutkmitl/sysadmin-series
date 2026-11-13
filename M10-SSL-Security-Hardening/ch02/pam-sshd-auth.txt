@@ -1,0 +1,7 @@
+# ห้าบรรทัดแรกของ /etc/pam.d/sshd บน Rocky Linux 10 หลังแก้ (หัวข้อ 2.2)
+# สำรองก่อน: sudo cp -a /etc/pam.d/sshd /root/sshd.pam.bak
+#%PAM-1.0
+#auth       substack     password-auth
+auth       required     pam_google_authenticator.so secret=${HOME}/.ssh/.google_authenticator nullok
+auth       required     pam_permit.so
+auth       include      postlogin

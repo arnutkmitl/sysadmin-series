@@ -1,0 +1,11 @@
+
+module aide_efi 1.0;
+
+require {
+	type aide_t;
+	type dosfs_t;
+	class filesystem getattr;
+}
+
+#============= aide_t ==============
+allow aide_t dosfs_t:filesystem getattr;

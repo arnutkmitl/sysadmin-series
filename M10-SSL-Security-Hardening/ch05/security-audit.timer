@@ -1,0 +1,11 @@
+# /etc/systemd/system/security-audit.timer  ตรวจทุกเช้าวันจันทร์
+[Unit]
+Description=Weekly security audit
+
+[Timer]
+OnCalendar=Mon *-*-* 07:00:00
+RandomizedDelaySec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

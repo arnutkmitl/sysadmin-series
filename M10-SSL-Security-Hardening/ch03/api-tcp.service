@@ -1,0 +1,11 @@
+# /etc/systemd/system/api.service  backend ทดสอบ ฟัง TCP 127.0.0.1:3000 (หัวข้อ 3.3)
+[Unit]
+Description=Lab API backend
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -m http.server 3000 --bind 127.0.0.1 --directory /opt/api
+DynamicUser=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1 @@
+%webops ALL=(root) NOPASSWD: /usr/bin/systemctl reload nginx, /usr/bin/systemctl restart php-fpm

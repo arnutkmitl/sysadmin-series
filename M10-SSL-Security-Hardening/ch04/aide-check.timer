@@ -1,0 +1,11 @@
+# /etc/systemd/system/aide-check.timer  รัน aide-check.service วันละครั้ง
+[Unit]
+Description=Daily AIDE check
+
+[Timer]
+OnCalendar=*-*-* 04:30:00
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

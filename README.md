@@ -2,7 +2,7 @@
 
 ไฟล์ประกอบหนังสือชุด SysAdmin Pocket Series โดย ดร.อาณัติ รัตนถิรกุล (อ.หมวกแดง) สำนักพิมพ์ SysAdmin Knowledge Press
 แต่ละเล่มมีโฟลเดอร์ของตัวเอง ภายในมีคำสั่งทุกบรรทัดในเล่ม ไฟล์ตั้งค่า และสคริปต์ เรียงตามบทเดียวกับหนังสือ
-ตอนนี้ดาวน์โหลดได้ 9 จาก 17 เล่ม
+ตอนนี้ดาวน์โหลดได้ 10 จาก 17 เล่ม
 
 ## รายชื่อเล่ม
 
@@ -17,7 +17,7 @@
 | M07 | Database Server: MySQL & PostgreSQL ตั้ง DB จริงใน 1 วัน | [`M07-Database-Server-MySQL-PostgreSQL/`](M07-Database-Server-MySQL-PostgreSQL/) | ดาวน์โหลดได้ |
 | M08 | DNS & Essential Network Services: ตั้ง DNS Server ใน 1 วัน | [`M08-DNS-Essential-Network-Services/`](M08-DNS-Essential-Network-Services/) | ดาวน์โหลดได้ |
 | M09 | VPN Server: เชื่อมเครือข่ายปลอดภัยใน 1 วัน | [`M09-VPN-Server-WireGuard-OpenVPN/`](M09-VPN-Server-WireGuard-OpenVPN/) | ดาวน์โหลดได้ |
-| M10 | SSL & Security Hardening: ล็อก Server ให้แน่นใน 1 วัน | `M10-SSL-Security-Hardening/` | กำลังจัดทำ |
+| M10 | SSL & Security Hardening: ล็อก Server ให้แน่นใน 1 วัน | [`M10-SSL-Security-Hardening/`](M10-SSL-Security-Hardening/) | ดาวน์โหลดได้ |
 | M11 | Proxmox VE: สร้าง Virtual Lab ใน 1 วัน | `M11-Proxmox-VE-Virtualization/` | กำลังจัดทำ |
 | M12 | CI/CD & Git Essentials: Deploy อัตโนมัติใน 1 วัน | `M12-CICD-Git-Essentials/` | กำลังจัดทำ |
 | M13 | Mail Server: ตั้งระบบอีเมลองค์กรใน 1 วัน | `M13-Mail-Server-Postfix-Dovecot/` | กำลังจัดทำ |

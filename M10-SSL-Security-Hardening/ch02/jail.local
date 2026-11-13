@@ -1,0 +1,23 @@
+# /etc/fail2ban/jail.local
+# ก่อนเปิดครั้งแรก: sudo touch /var/log/fail2ban.log && sudo restorecon -v /var/log/fail2ban.log
+[DEFAULT]
+bantime  = 1h
+findtime = 10m
+maxretry = 3
+# อย่าใส่ทั้งวง 192.168.56.0/24 แบบ M02 เพราะ attacker อยู่ในวงนี้
+ignoreip = 127.0.0.1/8 ::1 192.168.56.1
+
+[sshd]
+enabled = true
+port    = 2222
+backend = systemd
+mode    = aggressive
+
+[recidive]
+enabled  = true
+maxretry = 3
+
+[nginx-botsearch]
+enabled = true
+# บนเว็บ PHP คำขอ wp-login.php ไม่เขียน error.log แบบที่ตัวกรองรู้จัก อ่าน access log แทน
+logpath = %(nginx_access_log)s

@@ -1,0 +1,10 @@
+# /etc/systemd/system/aide-check.service  ตรวจไฟล์ระบบเทียบกับฐานข้อมูล AIDE (หัวข้อ 4.5)
+# aide คืนค่าไม่ใช่ 0 เมื่อพบความต่าง unit จึงขึ้น failed ให้เห็นใน systemctl --failed
+[Unit]
+Description=AIDE file integrity check
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/aide --check
+Nice=19
+IOSchedulingClass=idle
