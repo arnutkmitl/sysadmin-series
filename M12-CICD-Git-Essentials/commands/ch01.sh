@@ -206,6 +206,7 @@ git rm --cached deploy/backup.key
 git commit -m "Stop tracking deploy/backup.key"
 git log --oneline --all -- deploy/backup.key
 # [ci]
+# ⚠️ คำสั่งนี้ลบหรือเขียนทับงานแบบย้อนไม่ได้ อ่านคำอธิบายในเล่มก่อนรัน
 git reset --hard HEAD~2
 ls deploy/
 # [ci]
@@ -241,6 +242,7 @@ git restore app/site/index.html
 # [ci]
 echo "test" >> README.md
 git status --short
+# ⚠️ คำสั่งนี้ลบหรือเขียนทับงานแบบย้อนไม่ได้ อ่านคำอธิบายในเล่มก่อนรัน
 git reset --hard
 git status --short
 

@@ -47,5 +47,6 @@ git switch main
 git pull --ff-only gitlab main
 git commit --allow-empty -m "Direct push test"
 git push gitlab main
+# ⚠️ คำสั่งนี้ลบหรือเขียนทับงานแบบย้อนไม่ได้ อ่านคำอธิบายในเล่มก่อนรัน
 git reset --hard gitlab/main
 check-cicd.sh | tail -1
