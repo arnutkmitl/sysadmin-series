@@ -1,0 +1,7 @@
+# /etc/systemd/system/mail-report.service  ส่งสรุป log ของเมื่อวานให้ผู้ดูแล
+[Unit]
+Description=Send daily Postfix log summary
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/usr/sbin/pflogsumm -d yesterday --problems-first /var/log/maillog | /usr/bin/mail -s "สรุป mail log $(hostname) $(date -d yesterday +%%F)" admin@example.com'

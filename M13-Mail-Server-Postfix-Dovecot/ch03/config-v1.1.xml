@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- /var/www/autoconfig/mail/config-v1.1.xml  ค่าที่ Thunderbird ใช้ตั้งบัญชีให้อัตโนมัติ -->
+<clientConfig version="1.1">
+  <emailProvider id="example.com">
+    <domain>example.com</domain>
+    <displayName>อีเมล example.com</displayName>
+    <displayShortName>example.com</displayShortName>
+    <incomingServer type="imap">
+      <hostname>mail.example.com</hostname>
+      <port>993</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <outgoingServer type="smtp">
+      <hostname>mail.example.com</hostname>
+      <port>465</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </outgoingServer>
+  </emailProvider>
+</clientConfig>

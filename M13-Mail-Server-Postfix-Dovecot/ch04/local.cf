@@ -1,0 +1,13 @@
+# /etc/mail/spamassassin/local.cf  ค่าของเล่ม M13
+# คะแนนตั้งแต่ 5 ติดป้าย spam (Sieve ย้ายเข้า Junk) ตั้งแต่ 15 spamass-milter ปฏิเสธทันที (-r 15)
+required_score 5
+report_safe 0
+
+# เครื่องของเราเอง (127.0.0.1 รวมให้อัตโนมัติ) ที่เหลือถือเป็นภายนอกทั้งหมด แม้เป็น IP ภายในวงเดียวกัน
+trusted_networks 192.168.56.25
+internal_networks 192.168.56.25
+
+# rule ขององค์กร: หัวเรื่องเร่งให้โอนเงิน เป็นรูปแบบของอีเมลหลอกลวงที่พบบ่อยในไทย
+header   LOCAL_TH_URGENT_TRANSFER  Subject =~ /โอนเงินด่วน/
+describe LOCAL_TH_URGENT_TRANSFER  หัวเรื่องเร่งให้โอนเงิน
+score    LOCAL_TH_URGENT_TRANSFER  6.0

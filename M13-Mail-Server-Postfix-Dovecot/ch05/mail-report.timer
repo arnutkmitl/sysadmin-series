@@ -1,0 +1,10 @@
+# /etc/systemd/system/mail-report.timer
+[Unit]
+Description=Daily Postfix log summary
+
+[Timer]
+OnCalendar=*-*-* 06:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

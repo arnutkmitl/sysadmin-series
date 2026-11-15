@@ -1,0 +1,7 @@
+# /etc/systemd/system/mail-backup.service
+[Unit]
+Description=Backup mailboxes and mail server configuration
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/backup-mail.sh

@@ -1,0 +1,31 @@
+; /var/named/example.com.zone
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.com. (
+                 2026111504 ; serial  ปีเดือนวัน + ครั้งที่แก้ในวันนั้น
+                 3600       ; refresh secondary ถามหาการเปลี่ยนแปลงทุก 1 ชั่วโมง
+                 900        ; retry   ถ้าถามไม่สำเร็จ ลองใหม่ทุก 15 นาที
+                 1209600    ; expire  ติดต่อ primary ไม่ได้ 14 วัน secondary เลิกตอบ
+                 300 )      ; negative TTL  เวลาที่จำคำตอบ "ไม่มีชื่อนี้"
+        IN  NS   ns1.example.com.
+        IN  NS   ns2.example.com.
+        IN  MX   10 mail.example.com.
+        IN  TXT  "v=spf1 mx -all"
+ns1     IN  A    192.168.56.50
+ns2     IN  A    192.168.56.51
+web     IN  A    192.168.56.20
+web     IN  AAAA 2001:db8:56::20
+www     IN  CNAME web
+docker  IN  A    192.168.56.30
+db1     IN  A    192.168.56.40
+db2     IN  A    192.168.56.41
+mail    IN  A    192.168.56.25
+nas     IN  A    192.168.56.60
+lan     IN  NS   ns1.example.com.
+lan     IN  NS   ns2.example.com.
+backup  IN  A    192.168.56.70
+files   IN  A    192.168.56.80
+autoconfig IN  CNAME mail
+202611._domainkey	IN	TXT	( "v=DKIM1; k=rsa; "
+	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnjsrW6QUDklYw1Atdzp5f3umG6jj5elIHcBpaEnbBS2hnr6Z3M6cjZx01Wh+TQk14MfeyUYa2gAlxIqYwaQHrXLd0He/8mysxDooV0mOlzSDHhtRKatCiCNFvBCgezars1oOb9tRxetdj5lo7vOB0NUFIgpVOFE4jOf5mnFJk5SmPl8oXQ3Skrg4xT51TLtLfsoFjJiuVUkyT0"
+	  "2Cdv2JGd7u2mxmUOs3a29nsqELDGAltgKgpbusGyRnbj7vpPcjn9iYsMHBW6QIa2HGvk9ZCQZm++RNuXm92D5TL+jhWuwmthpI/K6R0I7B29Pue+fQgx4+6S9wqph8w7AEnSLGawIDAQAB" )  ; ----- DKIM key 202611 for example.com
+_dmarc  IN  TXT  "v=DMARC1; p=reject; rua=mailto:dmarc@example.com; adkim=r; aspf=r"

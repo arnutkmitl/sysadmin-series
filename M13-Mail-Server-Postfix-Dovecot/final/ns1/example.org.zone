@@ -1,0 +1,12 @@
+; /var/named/example.org.zone  โดเมนขององค์กรที่สองใน Lab
+$TTL 3600
+@       IN  SOA  ns1.example.com. hostmaster.example.org. (
+                 2026111503 3600 900 1209600 300 )
+        IN  NS   ns1.example.com.
+        IN  MX   10 mail.example.org.
+        IN  TXT  "v=spf1 mx -all"
+mail    IN  A    192.168.56.26
+202611._domainkey	IN	TXT	( "v=DKIM1; k=rsa; "
+	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArkB1LCrXhq7QZH5rgNH3NCqg9suJvt+EaaFrDMnpbFQL26Yr69prx2WGYxg3esyM+VQgjVIGRURuYJdRA4MrrYnmBRTxH4vBQd2nJl9BB8aDpk+lHwNNWjbSVtuXFC+Q1+40gnl45UGtAf6nyy+9xA5BgJlcT1Djz1Azd1L8I1oQPX/h2vE7OqxRRUrvq4A9FmrCgk/vAtDmUU"
+	  "wRtVGX/XKeh6fakWuxwSd8hbyB0a/DRoCC7Ha6SqwyfSqav/BQjia5NHemoRQtwtZ0TS5dPUZFGic+OByoR+I7rY2s0YponYNLFGqQtpF23PSH99mwr4nyIyLI/wCO2w13doImdQIDAQAB" )  ; ----- DKIM key 202611 for example.org
+_dmarc  IN  TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.org"

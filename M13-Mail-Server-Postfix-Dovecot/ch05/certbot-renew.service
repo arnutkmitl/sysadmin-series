@@ -1,0 +1,9 @@
+# /etc/systemd/system/certbot-renew.service
+[Unit]
+Description=Renew ACME certificates
+
+[Service]
+Type=oneshot
+# Lab เท่านั้น: ให้ certbot เชื่อถือ Pebble บน server จริงลบบรรทัดนี้
+Environment=REQUESTS_CA_BUNDLE=/opt/pebble/certs/pebble.minica.pem
+ExecStart=/usr/bin/certbot renew --quiet --no-random-sleep-on-renew

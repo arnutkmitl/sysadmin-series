@@ -1,0 +1,2 @@
+25      IN  PTR  mail.example.com.
+26      IN  PTR  mail.example.org.
