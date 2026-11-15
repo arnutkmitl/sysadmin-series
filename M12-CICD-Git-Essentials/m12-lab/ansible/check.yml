@@ -1,0 +1,26 @@
+# ansible/check.yml
+- name: Check app servers
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Docker is reachable for deploy user
+      ansible.builtin.shell: docker info 2>/dev/null | awk '/Server Version/ {print $3}'
+      register: docker_version
+      changed_when: false
+
+    - name: Disk space on /srv is above 1 GB
+      ansible.builtin.shell: df --output=avail -BG /srv | tail -1 | tr -dc 0-9
+      register: srv_free
+      changed_when: false
+      failed_when: srv_free.stdout | int < 1
+
+    - name: App answers with its version
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}/version.json"
+        return_content: true
+      register: app
+      delegate_to: localhost
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "docker {{ docker_version.stdout }}, /srv free {{ srv_free.stdout }} GB, app {{ app.json.version }} {{ app.json.commit }}"

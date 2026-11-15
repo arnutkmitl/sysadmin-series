@@ -1,0 +1,31 @@
+# .github/workflows/ansible.yml
+name: ansible
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        type: choice
+        options: [all, staging, production]
+
+permissions:
+  contents: read
+
+jobs:
+  playbook:
+    runs-on: [self-hosted, lab]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Prepare SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/key"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+      - name: Run playbook
+        env:
+          ANSIBLE_SSH_ARGS: "-o UserKnownHostsFile=${{ runner.temp }}/known_hosts"
+        run: |
+          ansible-playbook -i ansible/inventory.ini ansible/check.yml \
+            --private-key "$RUNNER_TEMP/key" --limit "${{ inputs.limit }}"

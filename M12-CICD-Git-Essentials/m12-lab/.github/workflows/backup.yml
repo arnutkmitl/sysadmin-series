@@ -1,0 +1,50 @@
+# .github/workflows/backup.yml
+name: backup
+on:
+  schedule:
+    - cron: "30 19 * * *"
+  workflow_dispatch:
+    inputs:
+      host:
+        description: "เครื่องที่จะสำรอง"
+        default: prod.lab.test
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  backup:
+    runs-on: [self-hosted, lab]
+    env:
+      HOST: ${{ inputs.host || 'prod.lab.test' }}
+    steps:
+      - name: Prepare SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/key"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+      - name: Archive /srv/m12-app
+        run: |
+          ssh -i "$RUNNER_TEMP/key" -o UserKnownHostsFile="$RUNNER_TEMP/known_hosts" \
+            -o ConnectTimeout=10 -p 2222 "deploy@$HOST" \
+            "tar czf - -C /srv m12-app" > "m12-app-$HOST-$(date +%Y%m%d).tar.gz"
+          ls -l m12-app-*.tar.gz
+      - uses: actions/upload-artifact@v7
+        with:
+          name: m12-app-${{ env.HOST }}-${{ github.run_number }}
+          path: m12-app-*.tar.gz
+          retention-days: 7
+      - name: Open issue when backup fails
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/issues" \
+            -d "{\"title\":\"backup failed on $HOST\",\"body\":\"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}" \
+            | grep '"html_url"' | head -1

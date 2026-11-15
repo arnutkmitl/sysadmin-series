@@ -1,0 +1,62 @@
+# .gitlab-ci.yml
+stages: [test, build, deploy]
+
+variables:
+  IMAGE: 192.168.56.30:5000/m12-app
+  TAG: $CI_COMMIT_SHORT_SHA
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+test:
+  stage: test
+  tags: [docker]
+  image: alpine:3.22
+  script:
+    - apk add --no-cache bash
+    - cd app && bash tests/test.sh
+
+build:
+  stage: build
+  tags: [shell]
+  script:
+    - docker build -t "$IMAGE:$TAG"
+        --build-arg VERSION="$CI_COMMIT_REF_SLUG"
+        --build-arg COMMIT="$TAG" app
+    - docker push -q "$IMAGE:$TAG"
+
+.deploy:
+  stage: deploy
+  tags: [shell]
+  script:
+    - chmod 600 "$DEPLOY_SSH_KEY"
+    - SSH="ssh -i $DEPLOY_SSH_KEY -o UserKnownHostsFile=$DEPLOY_KNOWN_HOSTS -o BatchMode=yes -p 2222"
+    - scp -i "$DEPLOY_SSH_KEY" -o UserKnownHostsFile="$DEPLOY_KNOWN_HOSTS" -P 2222
+        deploy/compose.yaml "deploy@$HOST:/srv/m12-app/compose.yaml"
+    - $SSH "deploy@$HOST" "cd /srv/m12-app && echo APP_TAG=$TAG > .env && docker compose pull -q && docker compose up -d --wait"
+    - curl -fsS "http://$HOST/version.json" | tee version.json
+    - grep -q "\"commit\":\"$TAG\"" version.json
+
+deploy-staging:
+  extends: .deploy
+  variables:
+    HOST: stg.lab.test
+  resource_group: staging
+  environment:
+    name: staging
+    url: http://stg.lab.test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging"
+
+deploy-production:
+  extends: .deploy
+  variables:
+    HOST: prod.lab.test
+  resource_group: production
+  environment:
+    name: production
+    url: http://prod.lab.test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual

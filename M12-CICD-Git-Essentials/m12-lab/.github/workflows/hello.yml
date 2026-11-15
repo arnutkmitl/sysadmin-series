@@ -1,0 +1,19 @@
+# .github/workflows/hello.yml
+name: hello
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Show where this job runs
+        run: |
+          echo "runner: $RUNNER_NAME ($RUNNER_OS)"
+          echo "commit: $GITHUB_SHA on $GITHUB_REF_NAME"
+      - name: Test web page
+        working-directory: app
+        run: ./tests/test.sh

@@ -1,0 +1,33 @@
+# .github/workflows/site.yml
+name: site
+on:
+  push:
+    branches: [staging]
+    paths: ["app/site/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: [self-hosted, lab]
+    env:
+      HOST: stg.lab.test
+    steps:
+      - uses: actions/checkout@v7
+      - name: Prepare SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/key"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+      - name: Sync files with rsync
+        run: |
+          rsync -az --delete --itemize-changes \
+            -e "ssh -i $RUNNER_TEMP/key -o UserKnownHostsFile=$RUNNER_TEMP/known_hosts -p 2222" \
+            app/site/ "deploy@$HOST:/srv/m12-site/"
+      - name: Check page
+        run: curl -fsS "http://$HOST:8081/" | grep '<title>'

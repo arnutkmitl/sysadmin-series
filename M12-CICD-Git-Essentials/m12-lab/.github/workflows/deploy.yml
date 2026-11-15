@@ -1,0 +1,48 @@
+# .github/workflows/deploy.yml
+name: deploy
+on:
+  workflow_call:
+    inputs:
+      environment: { type: string, required: true }
+      tag: { type: string, required: true }
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options: [staging, production]
+      tag:
+        description: "image tag (7 ตัวแรกของ commit)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, lab]
+    environment: ${{ inputs.environment }}
+    concurrency: deploy-${{ inputs.environment }}
+    env:
+      HOST: ${{ inputs.environment == 'production' && 'prod.lab.test' || 'stg.lab.test' }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Prepare SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/key"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$RUNNER_TEMP/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+          echo "SSH_OPTS=-i $RUNNER_TEMP/key -o UserKnownHostsFile=$RUNNER_TEMP/known_hosts -o BatchMode=yes" >> "$GITHUB_ENV"
+      - name: Copy compose file
+        run: scp $SSH_OPTS -P 2222 deploy/compose.yaml "deploy@$HOST:/srv/m12-app/compose.yaml"
+      - name: Pull and start new version
+        run: |
+          ssh $SSH_OPTS -p 2222 "deploy@$HOST" \
+            "cd /srv/m12-app && echo APP_TAG=$TAG > .env && docker compose pull -q && docker compose up -d --wait"
+      - name: Check running version
+        run: |
+          curl -fsS "http://$HOST/version.json" | tee version.json
+          grep -q "\"commit\":\"$TAG\"" version.json

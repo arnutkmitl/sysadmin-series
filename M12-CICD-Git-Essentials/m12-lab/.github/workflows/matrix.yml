@@ -1,0 +1,20 @@
+# .github/workflows/matrix.yml
+name: matrix
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["rockylinux/rockylinux:10", "ubuntu:26.04"]
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Test on ${{ matrix.image }}
+        working-directory: app
+        run: |
+          grep PRETTY_NAME /etc/os-release
+          bash tests/test.sh

@@ -1,0 +1,56 @@
+# .github/workflows/pipeline.yml
+name: pipeline
+on:
+  push:
+    branches: [main, staging, "feature/**"]
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ${{ vars.REGISTRY }}/m12-app
+
+jobs:
+  test:
+    runs-on: [self-hosted, lab]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Test web page
+        working-directory: app
+        run: ./tests/test.sh
+
+  build:
+    needs: test
+    runs-on: [self-hosted, lab]
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set image tag
+        id: meta
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: Build image
+        run: |
+          docker build -t "$IMAGE:${{ steps.meta.outputs.tag }}" \
+            --build-arg VERSION="${GITHUB_REF_NAME//\//-}" \
+            --build-arg COMMIT="${{ steps.meta.outputs.tag }}" app
+      - name: Push image
+        run: docker push -q "$IMAGE:${{ steps.meta.outputs.tag }}"
+
+  deploy-staging:
+    if: github.ref_name == 'staging'
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      tag: ${{ needs.build.outputs.tag }}
+    secrets: inherit
+
+  deploy-production:
+    if: github.ref_name == 'main'
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      tag: ${{ needs.build.outputs.tag }}
+    secrets: inherit
