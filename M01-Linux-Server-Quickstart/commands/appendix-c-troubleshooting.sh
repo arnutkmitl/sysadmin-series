@@ -1,23 +1,29 @@
 #!/usr/bin/env bash
-# ภาคผนวก ค รวมการแก้ไขปัญหา (Troubleshooting)
-# SysAdmin Pocket Series M01 Linux Server Quickstart
-# ไฟล์รวมคำสั่งตามลำดับในเล่ม ไม่ใช่สคริปต์ ให้คัดลอกไปรันทีละคำสั่งพร้อมอ่านคำอธิบายในเล่ม
-# "หน้า N" คือเลขหน้าที่พิมพ์ในหนังสือ
+# ภาคผนวก ค รวมการแก้ไขปัญหา
+# SysAdmin Pocket Series M01 Linux Server Quickstart ฉบับปรับปรุง (Rocky Linux 10.2)
+#
+# ไฟล์นี้รวมคำสั่งตามลำดับในเล่ม ไม่ใช่สคริปต์ ให้คัดลอกไปรันทีละคำสั่งพร้อมอ่านคำอธิบายในเล่ม
+# คำสั่งที่ไม่มีป้ายรันบน server ส่วนบรรทัดที่มีป้าย [Host PC] รันใน PowerShell บน Windows
 echo "ไฟล์รวมคำสั่ง ห้ามรันทั้งไฟล์ ให้คัดลอกทีละคำสั่ง" >&2
 exit 1
 
-# ── หน้า 227 ────────────────────────────────────────
-sudo journalctl -p err --since today
-sudo journalctl -u [service] -n 50
-systemctl status [service]
+# ── ลำดับการไล่ปัญหา ────────────────────────────────────────────
+sudo journalctl -p err --since today --no-pager
+sudo journalctl -u sshd -n 50 --no-pager
+systemctl status sshd
 systemctl --failed
-ip addr (มี IP ไหม)
-ping 8.8.8.8 (Network ออกได้ไหม)
-ss -tlnp (Port เปิดอยู่ไหม)
-firewall-cmd --list-all
+ip -br addr
+ip route get 1.1.1.1
+sudo ss -tlnp
+sudo firewall-cmd --list-all
 getenforce
-sealert -a /var/log/audit/audit.log
+sudo ausearch -m avc -ts recent
+ls -la /path/ที่มีปัญหา
+ls -Z /path/ที่มีปัญหา
+df -h
 
-# ── หน้า 228 ────────────────────────────────────────
-ls -la [path]
-ls -Z [path] (SELinux Context)
+systemctl --failed
+
+
+# ── SSH ─────────────────────────────────────────────────────────
+# [Host PC] ssh -v server
