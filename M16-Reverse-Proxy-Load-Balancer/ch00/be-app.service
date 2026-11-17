@@ -1,0 +1,12 @@
+# /etc/systemd/system/be-app.service
+[Unit]
+Description=M16 lab backend app
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/local/bin/be-app.py
+DynamicUser=yes
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

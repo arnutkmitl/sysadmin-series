@@ -1,0 +1,49 @@
+# /opt/traefik/docker-compose.yml
+services:
+  traefik:
+    image: traefik:v3.7.19
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      LEGO_CA_CERTIFICATES: /pebble/pebble.minica.pem   # ให้ Traefik เชื่อ TLS ของ Pebble (Lab เท่านั้น)
+    extra_hosts:
+      - "pebble:host-gateway"                           # ชื่อ pebble ตรงกับใบรับรองของ Pebble
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./dynamic:/etc/traefik/dynamic:ro
+      - ./acme:/acme
+      - /opt/pebble/certs/pebble.minica.pem:/pebble/pebble.minica.pem:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`traefik.lab.test`)
+      - traefik.http.routers.dashboard.entrypoints=websecure
+      - traefik.http.routers.dashboard.tls.certresolver=pebble
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.middlewares=admin-auth
+      - traefik.http.middlewares.admin-auth.basicauth.usersfile=/etc/traefik/dynamic/users.htpasswd
+
+  app:
+    image: traefik/whoami:v1.12.0
+    deploy:
+      replicas: 2
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`app.lab.test`)
+      - traefik.http.routers.app.entrypoints=websecure
+      - traefik.http.routers.app.tls.certresolver=pebble
+      - traefik.http.routers.app.middlewares=app-ratelimit
+      - traefik.http.middlewares.app-ratelimit.ratelimit.average=5
+      - traefik.http.middlewares.app-ratelimit.ratelimit.burst=10
+
+  admin:
+    image: traefik/whoami:v1.12.0
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.admin.rule=Host(`admin.lab.test`)
+      - traefik.http.routers.admin.entrypoints=websecure
+      - traefik.http.routers.admin.tls.certresolver=pebble
+      - traefik.http.routers.admin.middlewares=admin-auth

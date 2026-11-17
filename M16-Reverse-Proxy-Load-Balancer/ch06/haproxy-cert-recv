@@ -1,0 +1,15 @@
+#!/bin/bash
+# /usr/local/sbin/haproxy-cert-recv  (บน lb2) รับไฟล์ pem จาก stdin แล้ววางให้ HAProxy
+# เรียกได้ทางเดียวผ่าน sudo จากผู้ใช้ certsync ที่ถูกบังคับ command ใน authorized_keys
+set -euo pipefail
+name=${1:-}
+[[ $name =~ ^[a-z0-9.-]+\.pem$ ]] || { echo "bad name: $name" >&2; exit 1; }
+dir=/etc/haproxy/certs
+install -d -m 700 "$dir"
+umask 077
+cat > "$dir/.$name.tmp"
+grep -q "BEGIN CERTIFICATE" "$dir/.$name.tmp" && grep -q "PRIVATE KEY" "$dir/.$name.tmp" || { rm -f "$dir/.$name.tmp"; echo "not a pem bundle" >&2; exit 1; }
+mv "$dir/.$name.tmp" "$dir/$name"
+restorecon -q "$dir/$name" || true
+haproxy -c -q -f /etc/haproxy/haproxy.cfg && systemctl reload haproxy
+echo "installed $name"

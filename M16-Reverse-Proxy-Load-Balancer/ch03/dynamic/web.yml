@@ -1,0 +1,19 @@
+# /opt/traefik/dynamic/web.yml  (file provider: แก้ไฟล์นี้แล้ว Traefik อ่านใหม่เองไม่ต้อง restart)
+http:
+  routers:
+    web:
+      rule: Host(`web.lab.test`)
+      entryPoints: [websecure]
+      service: web-vms
+      tls:
+        certResolver: pebble
+  services:
+    web-vms:
+      loadBalancer:
+        healthCheck:
+          path: /health
+          interval: 2s
+          timeout: 1s
+        servers:
+          - url: http://192.168.56.73:8080
+          - url: http://192.168.56.74:8080

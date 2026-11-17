@@ -1,0 +1,10 @@
+# /opt/prom/prometheus.yml  เก็บ metrics ของ HAProxy ทั้งสองเครื่อง (ต่อยอดจาก M14)
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: haproxy
+    static_configs:
+      - targets: ["192.168.56.71:8404", "192.168.56.72:8404"]
+        labels:
+          role: proxy

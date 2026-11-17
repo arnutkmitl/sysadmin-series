@@ -1,0 +1,14 @@
+# /etc/systemd/system/be-app2.service  แอปตัวที่สอง (app.lab.test) บนพอร์ต 8081
+[Unit]
+Description=M16 lab backend app 2
+After=network-online.target
+
+[Service]
+Environment=BE_PORT=8081
+Environment=BE_NAME=%l-app
+ExecStart=/usr/bin/python3 /usr/local/bin/be-app.py
+DynamicUser=yes
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
