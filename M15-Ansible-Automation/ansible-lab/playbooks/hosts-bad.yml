@@ -1,0 +1,9 @@
+---
+# /home/admin/ansible-lab/playbooks/hosts-bad.yml
+# ตัวอย่างที่ไม่ idempotent: รันกี่ครั้งก็ต่อท้ายบรรทัดเดิมซ้ำ
+- name: เพิ่มชื่อ ctl ใน /etc/hosts แบบผิด
+  hosts: rocky
+  become: true
+  tasks:
+    - name: ต่อท้ายด้วย shell
+      ansible.builtin.shell: echo "192.168.56.65 ctl.lab.local ctl" >> /etc/hosts

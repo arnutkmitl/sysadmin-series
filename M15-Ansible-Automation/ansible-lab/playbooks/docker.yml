@@ -1,0 +1,11 @@
+---
+# /home/admin/ansible-lab/playbooks/docker.yml
+# Lab 4.2 ใช้ Role geerlingguy.docker จาก Galaxy กับกลุ่ม dockerhosts
+- name: Docker host
+  hosts: dockerhosts
+  become: true
+  vars:
+    docker_users:
+      - ops
+  roles:
+    - geerlingguy.docker

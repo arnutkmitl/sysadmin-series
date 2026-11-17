@@ -1,0 +1,57 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/08-patch.yml
+# Playbook #8 ลงแพตช์ความปลอดภัยทีละเครื่อง Reboot เมื่อจำเป็น และหยุดทันทีถ้ามีบริการที่เพิ่งล้มเหลว
+- name: Patch แบบ rolling
+  hosts: rocky
+  become: true
+  serial: 1
+  max_fail_percentage: 0
+
+  tasks:
+    - name: unit ที่ล้มเหลวอยู่ก่อนแพตช์
+      ansible.builtin.command: systemctl list-units --state=failed --plain --no-legend --no-pager
+      register: failed_before
+      changed_when: false
+
+    - name: ลงแพตช์ความปลอดภัย
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        security: true
+      register: patch
+
+    - name: ตรวจว่าต้อง Reboot หรือไม่ (rc 1 = ต้อง)
+      ansible.builtin.command: dnf needs-restarting -r
+      register: needs
+      changed_when: false
+      failed_when: needs.rc not in [0, 1]
+
+    - name: Reboot เมื่อจำเป็น
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+      when: needs.rc == 1
+
+    - name: รอให้ systemd บูตเสร็จ
+      ansible.builtin.command: systemctl is-system-running --wait
+      register: state
+      changed_when: false
+      failed_when: false
+
+    - name: unit ที่ล้มเหลวหลังแพตช์
+      ansible.builtin.command: systemctl list-units --state=failed --plain --no-legend --no-pager
+      register: failed_after
+      changed_when: false
+
+    - name: หยุดทั้งงานถ้ามี unit ที่เพิ่งล้มเหลว
+      ansible.builtin.assert:
+        that: new_failed | length == 0
+        fail_msg: "unit ที่เพิ่งล้มเหลว: {{ new_failed | join(', ') }}"
+        success_msg: "สถานะ {{ state.stdout }} ไม่มี unit ใหม่ที่ล้มเหลว"
+      vars:
+        new_failed: "{{ failed_after.stdout_lines | map('split') | map('first') | difference(failed_before.stdout_lines | map('split') | map('first')) }}"
+
+    - name: สรุป
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }}: reboot={{ needs.rc == 1 }}
+          unit ที่ล้มเหลวอยู่เดิม={{ failed_before.stdout_lines | map('split') | map('first') | list }}

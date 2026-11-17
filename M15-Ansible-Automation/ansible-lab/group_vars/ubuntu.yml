@@ -1,0 +1,3 @@
+---
+# /home/admin/ansible-lab/group_vars/ubuntu.yml
+nginx_root: /var/www/html

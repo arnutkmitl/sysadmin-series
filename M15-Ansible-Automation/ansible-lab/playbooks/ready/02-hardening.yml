@@ -1,0 +1,77 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/02-hardening.yml
+# Playbook #2 SSH, fail2ban และ SELinux/AppArmor
+- name: Security hardening
+  hosts: all
+  become: true
+  vars:
+    sshd_service: "{{ 'sshd' if ansible_os_family == 'RedHat' else 'ssh' }}"
+
+  tasks:
+    - name: ค่าของ sshd ในไฟล์ drop-in (ตรวจด้วย sshd -t ก่อนวาง)
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/10-m15-hardening.conf
+        mode: "0600"
+        content: |
+          # Ansible managed (M15 Playbook #2)
+          PermitRootLogin no
+          MaxAuthTries 3
+          X11Forwarding no
+          ClientAliveInterval 300
+          ClientAliveCountMax 2
+        validate: /usr/sbin/sshd -t -f %s
+      notify: reload sshd
+
+    - name: EPEL สำหรับ fail2ban (Rocky)
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: ติดตั้ง fail2ban
+      ansible.builtin.package:
+        name: fail2ban
+        state: present
+
+    - name: jail ของ sshd บนพอร์ต 2222
+      ansible.builtin.copy:
+        dest: /etc/fail2ban/jail.d/m15-sshd.local
+        mode: "0644"
+        content: |
+          [sshd]
+          enabled = true
+          port = 2222
+          maxretry = 5
+          bantime = 1h
+          ignoreip = 127.0.0.1/8 192.168.56.65
+      notify: restart fail2ban
+
+    - name: เปิด fail2ban
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+
+    - name: SELinux ต้องเป็น enforcing (Rocky)
+      ansible.posix.selinux:
+        policy: targeted
+        state: enforcing
+      when: ansible_os_family == "RedHat"
+
+    - name: AppArmor ต้องทำงาน (Ubuntu)
+      ansible.builtin.service:
+        name: apparmor
+        state: started
+        enabled: true
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: reload sshd
+      ansible.builtin.service:
+        name: "{{ sshd_service }}"
+        state: reloaded
+
+    - name: restart fail2ban
+      ansible.builtin.service:
+        name: fail2ban
+        state: restarted

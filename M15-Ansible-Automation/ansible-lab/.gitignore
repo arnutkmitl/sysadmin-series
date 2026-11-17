@@ -1,0 +1,8 @@
+# /home/admin/ansible-lab/.gitignore
+# ของที่ดาวน์โหลดใหม่ได้จาก requirements.yml ไม่ต้องเก็บใน Git
+collections/
+roles/*.*
+*.retry
+pki/
+# ที่เก็บชั่วคราวของ ansible-lint (บทที่ 6)
+.ansible/

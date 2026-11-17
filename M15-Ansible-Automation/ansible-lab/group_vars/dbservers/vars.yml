@@ -1,0 +1,12 @@
+---
+# /home/admin/ansible-lab/group_vars/dbservers/vars.yml
+# ไฟล์ที่อ่านได้ อ้างถึงค่าลับผ่านตัวแปร vault_ เพื่อให้ค้นเจอว่าใช้ที่ไหน
+db_name: shop
+db_user: shop
+db_password: "{{ vault_db_password }}"
+
+# LINE Messaging API สำหรับแจ้งผล backup (Playbook #7)
+# Lab ชี้ไปปลายทางจำลองบน ctl ระบบจริงใช้ https://api.line.me/v2/bot/message/push
+line_api_url: http://192.168.56.65:8099/v2/bot/message/push
+line_to: U0123456789abcdef0123456789abcdef
+line_token: "{{ vault_line_token }}"

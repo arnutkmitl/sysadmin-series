@@ -1,0 +1,27 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/05-docker-host.yml
+# Playbook #5 Docker host: Role จาก Galaxy + จำกัดขนาด log ของ container
+- name: Docker host
+  hosts: dockerhosts
+  become: true
+  vars:
+    docker_users:
+      - ops
+    docker_daemon_options:
+      log-driver: json-file
+      log-opts:
+        max-size: "10m"
+        max-file: "3"
+  roles:
+    - geerlingguy.docker
+
+  post_tasks:
+    - name: อ่าน daemon.json ที่ Role เขียนไว้
+      ansible.builtin.slurp:
+        src: /etc/docker/daemon.json
+      register: daemon_json
+
+    - name: ตรวจว่าจำกัดขนาด log ไว้จริง
+      ansible.builtin.assert:
+        that: (daemon_json.content | b64decode | from_json)['log-opts']['max-size'] == "10m"
+        success_msg: daemon.json จำกัด log ที่ 10m x 3 ไฟล์

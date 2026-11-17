@@ -1,0 +1,80 @@
+---
+# /home/admin/ansible-lab/playbooks/web-multi.yml
+# Lab 3.1-3.3 Playbook เดียวสำหรับ Rocky และ Ubuntu ค่าต่างกันตาม group_vars และ host_vars
+- name: เว็บไซต์ m15 บนทุก distro
+  hosts: webservers:ubuntu
+  become: true
+
+  tasks:
+    - name: ติดตั้ง nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: ติดตั้งเครื่องมือทีละตัว
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ tools }}"
+
+    - name: สร้างโฟลเดอร์ของเว็บไซต์
+      ansible.builtin.file:
+        path: "{{ nginx_root }}/m15"
+        state: directory
+        mode: "0755"
+
+    - name: หน้าเว็บจาก Template
+      ansible.builtin.template:
+        src: ../templates/index.html.j2
+        dest: "{{ nginx_root }}/m15/index.html"
+        mode: "0644"
+
+    - name: อนุญาตให้ nginx ใช้พอร์ตนี้ใน SELinux (Rocky)
+      community.general.seport:
+        ports: "{{ site_port }}"
+        proto: tcp
+        setype: http_port_t
+        state: present
+      when: ansible_os_family == "RedHat"
+      notify: reload nginx
+
+    - name: config ของเว็บไซต์
+      ansible.builtin.template:
+        src: ../templates/m15-site.conf.j2
+        dest: /etc/nginx/conf.d/m15-site.conf
+        mode: "0644"
+      notify: reload nginx
+
+    - name: เปิดบริการ nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: ส่ง handler ที่ค้างอยู่ให้ทำงานก่อนตรวจ
+      ansible.builtin.meta: flush_handlers
+
+    - name: ตรวจว่าเว็บไซต์ตอบจริง
+      ansible.builtin.uri:
+        url: "http://localhost:{{ site_port }}/"
+
+    - name: เปิดพอร์ตใน firewalld (Rocky)
+      ansible.posix.firewalld:
+        port: "{{ site_port }}/tcp"
+        permanent: true
+        immediate: true
+        state: enabled
+      when: ansible_os_family == "RedHat"
+
+    - name: เพิ่มกฎใน ufw (Ubuntu)
+      community.general.ufw:
+        rule: allow
+        port: "{{ site_port }}"
+        proto: tcp
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded

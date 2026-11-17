@@ -1,0 +1,13 @@
+{# /home/admin/ansible-lab/playbooks/ready/templates/prometheus.yml.j2 #}
+# {{ ansible_managed }}
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: node
+    static_configs:
+{% for h in groups['all'] %}
+      - targets: ["{{ hostvars[h].ansible_host }}:9100"]
+        labels:
+          host: {{ h }}
+{% endfor %}

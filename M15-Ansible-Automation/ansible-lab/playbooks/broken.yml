@@ -1,0 +1,8 @@
+---
+- name: ไฟล์ที่ย่อหน้าผิด
+  hosts: webservers
+  tasks:
+    - name: ติดตั้ง nginx
+      ansible.builtin.dnf:
+        name: nginx
+       state: present

@@ -2,7 +2,7 @@
 
 ไฟล์ประกอบหนังสือชุด SysAdmin Pocket Series โดย ดร.อาณัติ รัตนถิรกุล (อ.หมวกแดง) สำนักพิมพ์ SysAdmin Knowledge Press
 แต่ละเล่มมีโฟลเดอร์ของตัวเอง ภายในมีคำสั่งทุกบรรทัดในเล่ม ไฟล์ตั้งค่า และสคริปต์ เรียงตามบทเดียวกับหนังสือ
-ตอนนี้ดาวน์โหลดได้ 14 จาก 17 เล่ม
+ตอนนี้ดาวน์โหลดได้ 15 จาก 17 เล่ม
 
 ## รายชื่อเล่ม
 
@@ -22,7 +22,7 @@
 | M12 | CI/CD & Git Essentials: Deploy อัตโนมัติใน 1 วัน | [`M12-CICD-Git-Essentials/`](M12-CICD-Git-Essentials/) | ดาวน์โหลดได้ |
 | M13 | Mail Server: ตั้งระบบอีเมลองค์กรใน 1 วัน | [`M13-Mail-Server-Postfix-Dovecot/`](M13-Mail-Server-Postfix-Dovecot/) | ดาวน์โหลดได้ |
 | M14 | Monitoring with Grafana & Prometheus: สร้างระบบ Monitoring จาก 0 ใน 1 วัน | [`M14-Monitoring-Grafana-Prometheus/`](M14-Monitoring-Grafana-Prometheus/) | ดาวน์โหลดได้ |
-| M15 | Ansible Automation: จัดการ Server 10 เครื่องเหมือน 1 เครื่อง | `M15-Ansible-Automation/` | กำลังจัดทำ |
+| M15 | Ansible Automation: จัดการ Server 10 เครื่องเหมือน 1 เครื่อง | [`M15-Ansible-Automation/`](M15-Ansible-Automation/) | ดาวน์โหลดได้ |
 | M16 | Reverse Proxy & Load Balancer: Nginx, HAProxy, Traefik ครบใน 1 วัน | `M16-Reverse-Proxy-Load-Balancer/` | กำลังจัดทำ |
 | M17 | Backup & Disaster Recovery: อย่าให้ข้อมูลหายเป็นอันขาด | `M17-Backup-Disaster-Recovery/` | กำลังจัดทำ |
 

@@ -1,0 +1,23 @@
+# /home/admin/ansible-lab/inventory.yml
+all:
+  vars:
+    ansible_port: 2222
+  children:
+    rocky:
+      children:
+        webservers:
+          hosts:
+            web:
+              ansible_host: 192.168.56.66
+        dockerhosts:
+          hosts:
+            app:
+              ansible_host: 192.168.56.67
+        dbservers:
+          hosts:
+            db:
+              ansible_host: 192.168.56.68
+    ubuntu:
+      hosts:
+        ubu2:
+          ansible_host: 192.168.56.82

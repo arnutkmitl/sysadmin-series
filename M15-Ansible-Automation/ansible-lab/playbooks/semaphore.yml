@@ -1,0 +1,73 @@
+---
+# /home/admin/ansible-lab/playbooks/semaphore.yml
+# บทที่ 6 Semaphore UI บน app: รัน Playbook ของโปรเจกต์นี้จากหน้าเว็บ
+- name: Semaphore UI
+  hosts: dockerhosts
+  become: true
+  vars:
+    sem_dir: /opt/semaphore
+    sem_image: semaphoreui/semaphore:v2.20.24-ansible2.16.5
+
+  tasks:
+    - name: โฟลเดอร์ของ Semaphore
+      ansible.builtin.file:
+        path: "{{ sem_dir }}"
+        state: directory
+        mode: "0750"
+
+    - name: สำเนาโปรเจกต์จาก ctl ให้ผู้ใช้ semaphore (uid 1001) เขียนได้
+      ansible.posix.synchronize:
+        src: "{{ playbook_dir }}/../"
+        dest: "{{ sem_dir }}/repo/"
+        delete: true
+        rsync_opts:
+          - "--exclude=pki/"
+          - "--exclude=.git/"
+          - "--chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r"
+          - "--chown=1001:0"
+
+    - name: รหัสผ่านผู้ดูแลและกุญแจที่ใช้เข้ารหัส Key Store ของ Semaphore
+      ansible.builtin.copy:
+        dest: "{{ sem_dir }}/.env"
+        mode: "0600"
+        content: |
+          SEMAPHORE_ADMIN_PASSWORD={{ vault_semaphore_password }}
+          SEMAPHORE_ACCESS_KEY_ENCRYPTION={{ vault_semaphore_encryption }}
+      no_log: true
+
+    - name: docker-compose.yml
+      ansible.builtin.copy:
+        dest: "{{ sem_dir }}/docker-compose.yml"
+        mode: "0644"
+        content: |
+          services:
+            semaphore:
+              image: {{ sem_image }}
+              container_name: semaphore
+              ports:
+                - "3000:3000"
+              environment:
+                SEMAPHORE_DB_DIALECT: sqlite
+                SEMAPHORE_ADMIN: admin
+                SEMAPHORE_ADMIN_NAME: ผู้ดูแล
+                SEMAPHORE_ADMIN_EMAIL: admin@lab.local
+                ANSIBLE_HOST_KEY_CHECKING: "False"
+              env_file: .env
+              volumes:
+                - semaphore-data:/var/lib/semaphore
+                - ./repo:/repo
+              restart: unless-stopped
+          volumes:
+            semaphore-data:
+
+    - name: เปิด Semaphore
+      community.docker.docker_compose_v2:
+        project_src: "{{ sem_dir }}"
+        state: present
+
+    - name: เปิดพอร์ต 3000 ใน firewalld
+      ansible.posix.firewalld:
+        port: 3000/tcp
+        permanent: true
+        immediate: true
+        state: enabled

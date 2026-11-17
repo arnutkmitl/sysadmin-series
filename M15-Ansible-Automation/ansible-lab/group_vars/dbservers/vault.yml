@@ -1,0 +1,6 @@
+---
+# group_vars/dbservers/vault.yml (ตัวอย่างที่ยังไม่เข้ารหัส)
+# แก้ค่าแล้วเข้ารหัสด้วย: ansible-vault encrypt group_vars/dbservers/vault.yml
+vault_db_password: CHANGE_ME_db_password
+# Channel access token ของ LINE Messaging API ใน Lab ใช้ค่าใดก็ได้กับปลายทางจำลอง lab-mock/line_mock.py
+vault_line_token: lab-mock-not-a-real-token

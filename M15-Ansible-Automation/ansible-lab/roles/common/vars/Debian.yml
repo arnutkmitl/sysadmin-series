@@ -1,0 +1,7 @@
+---
+# roles/common/vars/Debian.yml
+common_sudo_group: sudo
+common_chrony_service: chrony
+common_os_packages:
+  - vim
+  - bash-completion

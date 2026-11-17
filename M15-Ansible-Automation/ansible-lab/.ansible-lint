@@ -1,0 +1,13 @@
+---
+# /home/admin/ansible-lab/.ansible-lint
+# ไม่ตรวจของที่ดาวน์โหลดมาและตัวอย่างที่ตั้งใจให้ผิดในบทที่ 2
+exclude_paths:
+  - collections/
+  - roles/geerlingguy.docker/
+  - playbooks/broken.yml
+  - playbooks/hosts-bad.yml
+  - lab-mock/
+
+# ชื่อ Task ภาษาไทยไม่มีตัวพิมพ์ใหญ่และเล็ก กฎนี้จึงเตือนเฉพาะชื่อที่ขึ้นต้นด้วยคำอังกฤษ เช่น "unit" หรือ "config"
+skip_list:
+  - name[casing]

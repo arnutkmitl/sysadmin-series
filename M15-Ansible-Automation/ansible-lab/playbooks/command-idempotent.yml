@@ -1,0 +1,25 @@
+---
+# /home/admin/ansible-lab/playbooks/command-idempotent.yml
+# ใช้ command ให้รันซ้ำได้: creates บอกว่าไฟล์ไหนแปลว่าทำแล้ว, changed_when บอกว่าเมื่อไรนับว่าเปลี่ยน
+- name: command ที่รันซ้ำได้
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Rocky แบบ Minimal ไม่มี openssl มาให้
+      ansible.builtin.dnf:
+        name: openssl
+        state: present
+
+    - name: สร้าง dhparam ครั้งเดียว
+      ansible.builtin.command:
+        cmd: openssl dhparam -out /etc/nginx/dhparam.pem 2048
+        creates: /etc/nginx/dhparam.pem
+
+    - name: อ่านรุ่นของ nginx (ไม่เปลี่ยนอะไร)
+      ansible.builtin.command: nginx -v
+      register: nginx_ver
+      changed_when: false
+
+    - name: แสดงรุ่น
+      ansible.builtin.debug:
+        msg: "{{ nginx_ver.stderr }}"

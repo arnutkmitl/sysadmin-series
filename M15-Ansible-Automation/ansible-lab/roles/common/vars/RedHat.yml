@@ -1,0 +1,7 @@
+---
+# roles/common/vars/RedHat.yml
+common_sudo_group: wheel
+common_chrony_service: chronyd
+common_os_packages:
+  - vim-enhanced
+  - bash-completion

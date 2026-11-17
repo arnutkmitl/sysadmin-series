@@ -1,0 +1,26 @@
+---
+# /home/admin/ansible-lab/site.yml
+# Capstone: ตั้ง Server farm ทั้งชุดด้วยคำสั่งเดียว (ไม่รวม Playbook #8 ที่ต้องนัดเวลา Reboot)
+- name: ตั้งค่าเครื่องใหม่
+  ansible.builtin.import_playbook: playbooks/ready/01-initial-setup.yml
+
+- name: Security hardening
+  ansible.builtin.import_playbook: playbooks/ready/02-hardening.yml
+
+- name: เว็บไซต์ m15
+  ansible.builtin.import_playbook: playbooks/web-multi.yml
+
+- name: HTTPS
+  ansible.builtin.import_playbook: playbooks/ready/03-nginx-tls.yml
+
+- name: MariaDB
+  ansible.builtin.import_playbook: playbooks/ready/04-mariadb.yml
+
+- name: Docker host
+  ansible.builtin.import_playbook: playbooks/ready/05-docker-host.yml
+
+- name: Monitoring
+  ansible.builtin.import_playbook: playbooks/ready/06-monitoring.yml
+
+- name: Backup
+  ansible.builtin.import_playbook: playbooks/ready/07-backup.yml

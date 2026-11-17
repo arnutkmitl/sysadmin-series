@@ -1,0 +1,38 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/01-initial-setup.yml
+# Playbook #1 เครื่องใหม่ทุกเครื่อง: Role common + Firewall ที่เปิดเฉพาะ SSH
+- name: ตั้งค่าเครื่องใหม่
+  hosts: all
+  become: true
+  roles:
+    - common
+
+  tasks:
+    - name: firewalld ทำงาน (Rocky)
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      when: ansible_os_family == "RedHat"
+
+    - name: เปิด SSH พอร์ต 2222 ใน firewalld (Rocky)
+      ansible.posix.firewalld:
+        port: 2222/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+      when: ansible_os_family == "RedHat"
+
+    - name: เพิ่มกฎ SSH พอร์ต 2222 ใน ufw ก่อนเปิดใช้งาน (Ubuntu)
+      community.general.ufw:
+        rule: allow
+        port: "2222"
+        proto: tcp
+      when: ansible_os_family == "Debian"
+
+    - name: เปิด ufw โดยปฏิเสธขาเข้าเป็นค่าเริ่มต้น (Ubuntu)
+      community.general.ufw:
+        state: enabled
+        policy: deny
+        direction: incoming
+      when: ansible_os_family == "Debian"

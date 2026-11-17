@@ -1,0 +1,7 @@
+---
+# /home/admin/ansible-lab/playbooks/common.yml
+- name: ค่าพื้นฐานของทุกเครื่อง
+  hosts: all
+  become: true
+  roles:
+    - common

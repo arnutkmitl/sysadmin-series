@@ -1,0 +1,6 @@
+---
+# group_vars/dockerhosts/vault.yml (ตัวอย่างที่ยังไม่เข้ารหัส บทที่ 6)
+# แก้ค่าแล้วเข้ารหัสด้วย: ansible-vault encrypt group_vars/dockerhosts/vault.yml
+vault_semaphore_password: CHANGE_ME_semaphore_admin
+# สร้างด้วย head -c 32 /dev/urandom | base64 และห้ามเปลี่ยนหลังใช้งาน ไม่เช่นนั้น Key Store ถอดรหัสไม่ได้
+vault_semaphore_encryption: CHANGE_ME_base64_32_bytes

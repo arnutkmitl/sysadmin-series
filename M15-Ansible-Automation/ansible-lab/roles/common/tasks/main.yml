@@ -1,0 +1,41 @@
+---
+# roles/common/tasks/main.yml
+- name: โหลดค่าตาม distro
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: ตั้งชื่อเครื่องให้ตรงกับ Inventory
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}.lab.local"
+
+- name: ตั้งเขตเวลา
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+
+- name: ติดตั้งแพ็กเกจพื้นฐาน
+  ansible.builtin.package:
+    name: "{{ common_packages + common_os_packages }}"
+    state: present
+
+- name: เปิด chrony
+  ansible.builtin.service:
+    name: "{{ common_chrony_service }}"
+    state: started
+    enabled: true
+
+- name: ผู้ใช้สำหรับผู้ดูแล
+  ansible.builtin.user:
+    name: "{{ common_admin_user }}"
+    groups: "{{ common_sudo_group }}"
+    append: true
+    shell: /bin/bash
+
+- name: key ของผู้ดูแล
+  ansible.posix.authorized_key:
+    user: "{{ common_admin_user }}"
+    key: "{{ common_admin_key }}"
+
+- name: ข้อความหลังล็อกอิน
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: "0644"

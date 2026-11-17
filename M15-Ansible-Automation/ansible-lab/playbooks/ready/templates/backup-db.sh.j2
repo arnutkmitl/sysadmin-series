@@ -1,0 +1,20 @@
+#!/bin/bash
+# /usr/local/sbin/backup-db.sh
+# {{ ansible_managed }}
+set -o pipefail
+. /etc/backup/line.env
+OUT={{ backup_dir }}/all-$(date +%F-%H%M).sql.gz
+
+if mariadb-dump --all-databases --single-transaction | gzip > "$OUT"; then
+    MSG="✅ backup {{ inventory_hostname }} สำเร็จ $(du -h "$OUT" | cut -f1)"
+    RC=0
+else
+    MSG="❌ backup {{ inventory_hostname }} ล้มเหลว"
+    RC=1
+fi
+find {{ backup_dir }} -name '*.sql.gz' -mtime +{{ backup_keep_days }} -delete
+
+curl -s -m 10 -o /dev/null -X POST "$LINE_API" \
+     -H "Authorization: Bearer $LINE_TOKEN" -H "Content-Type: application/json" \
+     -d "{\"to\":\"$LINE_TO\",\"messages\":[{\"type\":\"text\",\"text\":\"$MSG\"}]}"
+exit $RC

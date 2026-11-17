@@ -1,0 +1,66 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/07-backup.yml
+# Playbook #7 สำรองฐานข้อมูลทุกคืนด้วย systemd timer และแจ้งผลผ่าน LINE Messaging API
+- name: Backup ฐานข้อมูล
+  hosts: dbservers
+  become: true
+  vars:
+    backup_dir: /var/backup/mariadb
+    backup_keep_days: 7
+    backup_time: "*-*-* 02:00:00"
+
+  tasks:
+    - name: โฟลเดอร์ของไฟล์สำรองและค่าตั้ง
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0700"
+      loop: ["{{ backup_dir }}", /etc/backup]
+
+    - name: Token และปลายทางของ LINE (อ่านได้เฉพาะ root)
+      ansible.builtin.copy:
+        dest: /etc/backup/line.env
+        mode: "0600"
+        content: |
+          LINE_API={{ line_api_url }}
+          LINE_TOKEN={{ line_token }}
+          LINE_TO={{ line_to }}
+      no_log: true
+
+    - name: สคริปต์สำรอง
+      ansible.builtin.template:
+        src: templates/backup-db.sh.j2
+        dest: /usr/local/sbin/backup-db.sh
+        mode: "0750"
+
+    - name: service และ timer
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/{{ item.name }}"
+        mode: "0644"
+        content: "{{ item.content }}"
+      loop:
+        - name: backup-db.service
+          content: |
+            [Unit]
+            Description=Backup MariaDB (M15 Playbook #7)
+            [Service]
+            Type=oneshot
+            ExecStart=/usr/local/sbin/backup-db.sh
+        - name: backup-db.timer
+          content: |
+            [Unit]
+            Description=Backup MariaDB ทุกคืน
+            [Timer]
+            OnCalendar={{ backup_time }}
+            Persistent=true
+            [Install]
+            WantedBy=timers.target
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: เปิด timer
+      ansible.builtin.systemd_service:
+        name: backup-db.timer
+        state: started
+        enabled: true
+        daemon_reload: true

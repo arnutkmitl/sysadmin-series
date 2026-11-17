@@ -1,0 +1,11 @@
+---
+# roles/common/defaults/main.yml
+# ค่าเริ่มต้นของ Role ซึ่งเป็นตัวแปรที่ลำดับต่ำสุด เปลี่ยนได้จาก group_vars หรือ host_vars
+common_timezone: Asia/Bangkok
+common_admin_user: ops
+common_admin_key: "{{ lookup('ansible.builtin.file', '~/.ssh/id_ed25519.pub') }}"
+common_packages:
+  - chrony
+  - tree
+  - curl
+  - rsync

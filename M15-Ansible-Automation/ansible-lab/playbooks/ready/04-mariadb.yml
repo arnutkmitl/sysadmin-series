@@ -1,0 +1,59 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/04-mariadb.yml
+# Playbook #4 MariaDB สำหรับใช้งานจริง: ลบของที่มากับการติดตั้ง สร้างฐานข้อมูลและผู้ใช้ เปิดพอร์ตเฉพาะเครื่องที่ต้องใช้
+- name: MariaDB server
+  hosts: dbservers
+  become: true
+  vars:
+    db_clients:
+      - 192.168.56.66
+      - 192.168.56.67
+    db_socket: /var/lib/mysql/mysql.sock
+
+  tasks:
+    - name: ติดตั้ง MariaDB และ PyMySQL
+      ansible.builtin.dnf:
+        name: [mariadb-server, python3-PyMySQL]
+        state: present
+
+    - name: เปิด MariaDB
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: ลบผู้ใช้ไม่ระบุชื่อ
+      ansible.mariadb.mariadb_user:
+        name: ""
+        host_all: true
+        state: absent
+        login_unix_socket: "{{ db_socket }}"
+
+    - name: ลบฐานข้อมูล test
+      ansible.mariadb.mariadb_db:
+        name: test
+        state: absent
+        login_unix_socket: "{{ db_socket }}"
+
+    - name: ฐานข้อมูลของแอป
+      ansible.mariadb.mariadb_db:
+        name: "{{ db_name }}"
+        state: present
+        login_unix_socket: "{{ db_socket }}"
+
+    - name: ผู้ใช้ของแอป
+      ansible.mariadb.mariadb_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        host: "192.168.56.%"
+        priv: "{{ db_name }}.*:ALL"
+        login_unix_socket: "{{ db_socket }}"
+      no_log: true
+
+    - name: เปิดพอร์ต 3306 ให้เฉพาะเครื่องที่ต้องใช้
+      ansible.posix.firewalld:
+        rich_rule: 'rule family="ipv4" source address="{{ item }}/32" port port="3306" protocol="tcp" accept'
+        permanent: true
+        immediate: true
+        state: enabled
+      loop: "{{ db_clients }}"

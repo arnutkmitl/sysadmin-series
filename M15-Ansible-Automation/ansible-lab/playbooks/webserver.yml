@@ -1,0 +1,38 @@
+---
+# /home/admin/ansible-lab/playbooks/webserver.yml
+# Lab 2.1 ติดตั้ง Nginx บนกลุ่ม webservers พร้อมหน้าเว็บและเปิด Firewall
+- name: ติดตั้ง Web Server
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: ติดตั้ง nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: วางหน้าเว็บ
+      ansible.builtin.copy:
+        content: |
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>{{ inventory_hostname }}</title>
+          <h1>สวัสดีจาก {{ inventory_hostname }}</h1>
+          <p>หน้านี้สร้างโดย Ansible</p>
+        dest: /usr/share/nginx/html/index.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: เปิดบริการ nginx และให้เริ่มเองหลัง Reboot
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: เปิด http ใน firewalld
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled

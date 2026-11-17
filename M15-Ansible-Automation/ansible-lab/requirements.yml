@@ -1,0 +1,19 @@
+# /home/admin/ansible-lab/requirements.yml
+# ตรึงรุ่นที่ยังรองรับ ansible-core 2.16 ของ Rocky Linux 10 (ตรวจ 17 พ.ย. 2569)
+collections:
+  - name: ansible.posix
+    version: 2.2.2
+  - name: community.general
+    version: 11.4.10
+  - name: community.docker
+    version: 4.8.9
+  - name: ansible.mysql
+    version: 5.2.1
+  - name: ansible.mariadb
+    version: 6.0.3
+  - name: community.crypto
+    version: 2.26.9
+
+roles:
+  - name: geerlingguy.docker
+    version: 8.0.1

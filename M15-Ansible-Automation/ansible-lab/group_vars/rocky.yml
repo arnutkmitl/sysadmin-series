@@ -1,0 +1,3 @@
+---
+# /home/admin/ansible-lab/group_vars/rocky.yml
+nginx_root: /usr/share/nginx/html

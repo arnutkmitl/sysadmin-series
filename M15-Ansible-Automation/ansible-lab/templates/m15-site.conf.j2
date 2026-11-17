@@ -1,0 +1,9 @@
+{# /home/admin/ansible-lab/templates/m15-site.conf.j2 #}
+# {{ ansible_managed }}
+server {
+    listen {{ site_port }};
+    server_name {{ inventory_hostname }};
+    root {{ nginx_root }}/m15;
+    index index.html;
+    charset utf-8;
+}

@@ -1,0 +1,36 @@
+---
+# /home/admin/ansible-lab/playbooks/db.yml
+# Lab 4.3 MariaDB พร้อมฐานข้อมูลและผู้ใช้ที่รหัสผ่านมาจาก Vault
+- name: Database server
+  hosts: dbservers
+  become: true
+
+  tasks:
+    - name: ติดตั้ง MariaDB และไลบรารีที่ module ansible.mariadb ต้องใช้
+      ansible.builtin.dnf:
+        name:
+          - mariadb-server
+          - python3-PyMySQL
+        state: present
+
+    - name: เปิด MariaDB
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: ฐานข้อมูลของแอป
+      ansible.mariadb.mariadb_db:
+        name: "{{ db_name }}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: ผู้ใช้ของแอป
+      ansible.mariadb.mariadb_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        host: "192.168.56.%"
+        priv: "{{ db_name }}.*:ALL"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+      no_log: true

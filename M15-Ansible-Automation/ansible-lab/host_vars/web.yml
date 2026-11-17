@@ -1,0 +1,4 @@
+---
+# /home/admin/ansible-lab/host_vars/web.yml
+site_title: Web Server หลัก
+site_color: "#1e8449"

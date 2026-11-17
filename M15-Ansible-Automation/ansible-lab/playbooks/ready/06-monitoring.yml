@@ -1,0 +1,130 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/06-monitoring.yml
+# Playbook #6 node_exporter บนทุกเครื่อง + Prometheus ใน Docker บน app (แนวเดียวกับ M14)
+- name: node_exporter ทุกเครื่อง
+  hosts: all
+  become: true
+  vars:
+    node_exporter_version: 1.12.1
+    node_exporter_base: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}
+    node_exporter_tgz: node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
+    node_exporter_sha256: >-
+      {{ lookup('ansible.builtin.url', node_exporter_base ~ '/sha256sums.txt', wantlist=True)
+         | select('search', node_exporter_tgz) | first | split | first }}
+
+  tasks:
+    - name: ผู้ใช้ระบบของ node_exporter
+      ansible.builtin.user:
+        name: node_exporter
+        system: true
+        shell: /usr/sbin/nologin
+        create_home: false
+
+    - name: unarchive ต้องใช้ tar ซึ่ง Rocky แบบ Minimal ไม่มี
+      ansible.builtin.package:
+        name: tar
+        state: present
+
+    - name: ดาวน์โหลดและตรวจ SHA256
+      ansible.builtin.get_url:
+        url: "{{ node_exporter_base }}/{{ node_exporter_tgz }}"
+        dest: /opt/{{ node_exporter_tgz }}
+        checksum: "sha256:{{ node_exporter_sha256 }}"
+        mode: "0644"
+
+    - name: แตกไฟล์ไปไว้ใน /opt
+      ansible.builtin.unarchive:
+        src: /opt/{{ node_exporter_tgz }}
+        dest: /opt
+        remote_src: true
+        creates: /opt/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+
+    - name: unit ของ systemd
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/node_exporter.service
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=Prometheus node_exporter
+          After=network-online.target
+          [Service]
+          User=node_exporter
+          ExecStart=/opt/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter
+          Restart=on-failure
+          [Install]
+          WantedBy=multi-user.target
+      notify: restart node_exporter
+
+    - name: เปิด node_exporter
+      ansible.builtin.systemd_service:
+        name: node_exporter
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    - name: เปิดพอร์ต 9100 ให้ app (Rocky)
+      ansible.posix.firewalld:
+        rich_rule: 'rule family="ipv4" source address="192.168.56.67/32" port port="9100" protocol="tcp" accept'
+        permanent: true
+        immediate: true
+        state: enabled
+      when: ansible_os_family == "RedHat"
+
+    - name: เปิดพอร์ต 9100 ให้ app (Ubuntu)
+      community.general.ufw:
+        rule: allow
+        from_ip: 192.168.56.67
+        port: "9100"
+        proto: tcp
+      when: ansible_os_family == "Debian"
+
+  handlers:
+    - name: restart node_exporter
+      ansible.builtin.systemd_service:
+        name: node_exporter
+        state: restarted
+        daemon_reload: true
+
+- name: Prometheus บน app
+  hosts: dockerhosts
+  become: true
+  vars:
+    mon_dir: /opt/monitoring
+
+  tasks:
+    - name: โฟลเดอร์ของ stack
+      ansible.builtin.file:
+        path: "{{ mon_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: prometheus.yml จากรายชื่อเครื่องใน Inventory
+      ansible.builtin.template:
+        src: templates/prometheus.yml.j2
+        dest: "{{ mon_dir }}/prometheus.yml"
+        mode: "0644"
+      notify: reload prometheus
+
+    - name: docker-compose.yml
+      ansible.builtin.copy:
+        src: files/monitoring-compose.yml
+        dest: "{{ mon_dir }}/docker-compose.yml"
+        mode: "0644"
+
+    - name: เปิด stack ด้วย Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ mon_dir }}"
+        state: present
+
+    - name: เปิดพอร์ต 9090 ให้ Host PC
+      ansible.posix.firewalld:
+        port: 9090/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+  handlers:
+    - name: reload prometheus
+      ansible.builtin.uri:
+        url: http://localhost:9090/-/reload
+        method: POST

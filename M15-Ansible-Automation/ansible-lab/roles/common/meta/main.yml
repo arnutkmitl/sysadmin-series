@@ -1,0 +1,13 @@
+---
+# roles/common/meta/main.yml
+galaxy_info:
+  author: M15 SysAdmin Pocket Series
+  description: ค่าพื้นฐานของทุกเครื่องใน Lab
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions: ["10"]
+    - name: Ubuntu
+      versions: [resolute]
+dependencies: []

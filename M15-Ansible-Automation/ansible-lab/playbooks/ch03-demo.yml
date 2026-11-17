@@ -1,0 +1,51 @@
+---
+# /home/admin/ansible-lab/playbooks/ch03-demo.yml
+# ตัวอย่างลำดับตัวแปร register, failed_when, block/rescue/always และ tags
+- name: ทดลองตัวแปรและการจัดการ Error
+  hosts: web
+  become: true
+  vars:
+    site_title: จาก vars ของ Play
+
+  tasks:
+    - name: ค่า site_title ที่เครื่องนี้ได้รับ
+      ansible.builtin.debug:
+        var: site_title
+      tags: vars
+
+    - name: อ่านพื้นที่ดิสก์
+      ansible.builtin.command: df -h /
+      register: disk
+      changed_when: false
+      tags: facts
+
+    - name: แสดงผลที่ register ไว้ร่วมกับ facts
+      ansible.builtin.debug:
+        msg:
+          - "{{ ansible_hostname }} มี CPU {{ ansible_processor_vcpus }} แกน"
+          - "{{ disk.stdout_lines[1] }}"
+      tags: facts
+
+    - name: นับบรรทัด error ใน log ของ nginx (ไม่พบไม่ใช่ความผิดพลาด)
+      ansible.builtin.command: grep -c "\[emerg\]" /var/log/nginx/error.log
+      register: emerg
+      changed_when: false
+      failed_when: emerg.rc > 1
+      tags: check
+
+    - name: ลองงานที่อาจล้มเหลว
+      tags: block
+      block:
+        - name: ดาวน์โหลดไฟล์จาก URL ที่ไม่มีอยู่
+          ansible.builtin.get_url:
+            url: http://192.168.56.66:8080/no-such-file.txt
+            dest: /tmp/m15-demo.txt
+            mode: "0644"
+      rescue:
+        - name: ทำเมื่อ block ล้มเหลว
+          ansible.builtin.debug:
+            msg: "ดาวน์โหลดไม่สำเร็จ ใช้ไฟล์สำรองแทน: {{ ansible_failed_result.msg }}"
+      always:
+        - name: ทำเสมอไม่ว่าผลจะเป็นอย่างไร
+          ansible.builtin.debug:
+            msg: "จบงานดาวน์โหลด"

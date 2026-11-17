@@ -1,0 +1,4 @@
+---
+# /home/admin/ansible-lab/host_vars/ubu2.yml
+site_title: เครื่องทดสอบ Ubuntu
+site_color: "#c0392b"

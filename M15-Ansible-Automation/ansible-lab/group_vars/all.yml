@@ -1,0 +1,13 @@
+---
+# /home/admin/ansible-lab/group_vars/all.yml
+# ค่าที่ทุกเครื่องได้รับ
+site_port: 8080
+site_owner: ทีม SysAdmin
+tools:
+  - tree
+  - curl
+  - rsync
+
+# public key ของผู้ดูแลที่ Role common วางให้ผู้ใช้ ops (บทที่ 6)
+# เขียนไว้ตรงนี้แทน lookup ไฟล์บน Control node เพื่อให้ Semaphore ใช้ได้ด้วย ใส่ public key ของคุณเอง
+# common_admin_key: "ssh-ed25519 AAAA... admin@ctl"   # เปิดและใส่ public key ของคุณเมื่อใช้ Semaphore

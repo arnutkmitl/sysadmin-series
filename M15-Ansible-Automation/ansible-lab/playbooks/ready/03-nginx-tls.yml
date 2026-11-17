@@ -1,0 +1,125 @@
+---
+# /home/admin/ansible-lab/playbooks/ready/03-nginx-tls.yml
+# Playbook #3 Nginx + HTTPS ด้วยใบรับรองจาก CA ภายในบน ctl (community.crypto)
+- name: CA ภายในบน ctl
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    pki_dir: "{{ playbook_dir }}/../../pki"
+
+  tasks:
+    - name: โฟลเดอร์ของ CA
+      ansible.builtin.file:
+        path: "{{ pki_dir }}"
+        state: directory
+        mode: "0700"
+
+    - name: private key ของ CA
+      community.crypto.openssl_privatekey:
+        path: "{{ pki_dir }}/m15-ca.key"
+        mode: "0600"
+
+    - name: CSR ของ CA
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "{{ pki_dir }}/m15-ca.key"
+        common_name: M15 Lab CA
+        basic_constraints: ["CA:TRUE"]
+        basic_constraints_critical: true
+        key_usage: [keyCertSign, cRLSign]
+        key_usage_critical: true
+      register: ca_csr
+      changed_when: false
+      check_mode: false
+
+    - name: ใบรับรองของ CA อายุ 10 ปี
+      community.crypto.x509_certificate:
+        path: "{{ pki_dir }}/m15-ca.crt"
+        csr_content: "{{ ca_csr.csr }}"
+        privatekey_path: "{{ pki_dir }}/m15-ca.key"
+        provider: selfsigned
+        selfsigned_not_after: "+3650d"
+
+- name: Nginx พร้อม HTTPS
+  hosts: webservers
+  become: true
+  vars:
+    pki_dir: "{{ playbook_dir }}/../../pki"
+    tls_name: "{{ inventory_hostname }}.lab.local"
+
+  tasks:
+    - name: ไลบรารีที่ community.crypto ใช้บนเครื่องปลายทาง
+      ansible.builtin.dnf:
+        name: python3-cryptography
+        state: present
+
+    - name: private key ของเว็บ (สร้างบนเครื่องเว็บ ไม่ออกจากเครื่อง)
+      community.crypto.openssl_privatekey:
+        path: /etc/pki/tls/private/{{ tls_name }}.key
+        mode: "0600"
+
+    - name: CSR ของเว็บ
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: /etc/pki/tls/private/{{ tls_name }}.key
+        common_name: "{{ tls_name }}"
+        subject_alt_name:
+          - "DNS:{{ tls_name }}"
+          - "IP:{{ ansible_host }}"
+      register: web_csr
+      changed_when: false
+      check_mode: false
+
+    - name: อ่านใบรับรองเดิม (ถ้ามี) เพื่อไม่ออกใหม่ทุกครั้ง
+      ansible.builtin.slurp:
+        src: /etc/pki/tls/certs/{{ tls_name }}.crt
+      register: old_cert
+      failed_when: false
+
+    - name: CA บน ctl เซ็นใบรับรอง
+      community.crypto.x509_certificate_pipe:
+        content: "{{ (old_cert.content | b64decode) if old_cert.content is defined else omit }}"
+        csr_content: "{{ web_csr.csr }}"
+        provider: ownca
+        ownca_path: "{{ pki_dir }}/m15-ca.crt"
+        ownca_privatekey_path: "{{ pki_dir }}/m15-ca.key"
+        ownca_not_after: "+397d"
+      delegate_to: localhost
+      become: false
+      register: signed
+
+    - name: วางใบรับรอง
+      ansible.builtin.copy:
+        content: "{{ signed.certificate }}"
+        dest: /etc/pki/tls/certs/{{ tls_name }}.crt
+        mode: "0644"
+      notify: reload nginx
+
+    - name: server block สำหรับ HTTPS
+      ansible.builtin.template:
+        src: templates/m15-tls.conf.j2
+        dest: /etc/nginx/conf.d/m15-tls.conf
+        mode: "0644"
+      notify: reload nginx
+
+    - name: เปิด https ใน firewalld
+      ansible.posix.firewalld:
+        service: https
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: ส่ง handler ให้ทำงานก่อนตรวจ
+      ansible.builtin.meta: flush_handlers
+
+    - name: ตรวจ HTTPS จาก ctl ด้วย CA ของเราเอง
+      ansible.builtin.uri:
+        url: "https://{{ ansible_host }}/"
+        ca_path: "{{ pki_dir }}/m15-ca.crt"
+      delegate_to: localhost
+      become: false
+
+  handlers:
+    - name: reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded

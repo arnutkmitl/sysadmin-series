@@ -1,0 +1,5 @@
+# /home/admin/ansible-lab/.ansible-lint-ignore
+# ข้อยกเว้นที่ตั้งใจ: แต่ละบรรทัดคือไฟล์และกฎที่ยอมรับ
+playbooks/web-multi.yml no-relative-paths
+playbooks/ready/08-patch.yml command-instead-of-module
+playbooks/ready/08-patch.yml package-latest
