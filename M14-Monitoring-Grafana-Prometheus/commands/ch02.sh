@@ -13,7 +13,7 @@ chmod 700 secrets
 head -c 18 /dev/urandom | base64 | tr -d '\n' > secrets/grafana_admin_password
 chmod 644 secrets/grafana_admin_password
 ls -ld secrets secrets/grafana_admin_password
-# ⚠️ ถ้า Grafana อ่านไฟล์ secret ไม่ได้ มันจะเริ่มทำงานต่อด้วยรหัสผ่านเริ่มต้น `admin` โดยไม่หยุด สิ่งที่บอกได้มีเพียงบรรทัด `Permission denied` บรรทัดเดียวใน log ใน Lab ของผู้เขียน ไฟล์ที่เป็น 600 ทำให้ Grafana เปิดใช้ admin/admin จริง ทุกครั้งที่ติดตั้งใหม่ให้ทดสอบว่ารหัส admin ใช้ไม่ได้ ตามคำสั่งท้าย Lab 2.1
+# ⚠️ ถ้า Grafana อ่านไฟล์ secret ไม่ได้ มันจะเริ่มทำงานต่อด้วยรหัสผ่านเริ่มต้น `admin` โดยไม่หยุด สิ่งที่บอกได้มีเพียงบรรทัด `Permission denied` บรรทัดเดียวใน log ซึ่งใน Lab ของผู้เขียน ไฟล์ที่เป็น 600 ทำให้ Grafana เปิดใช้ admin/admin จริง ดังนั้นทุกครั้งที่ติดตั้งใหม่ให้ทดสอบว่ารหัส admin ใช้ไม่ได้ ตามคำสั่งท้าย Lab 2.1
 mkdir -p grafana/provisioning/{datasources,dashboards,plugins,alerting} grafana/dashboards
 
 # ── Lab 2.1 เปิด Grafana และ Login ครั้งแรก ─────────────────

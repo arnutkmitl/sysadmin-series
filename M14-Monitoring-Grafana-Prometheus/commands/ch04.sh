@@ -5,7 +5,7 @@
 echo "ไฟล์รวมคำสั่ง ห้ามรันทั้งไฟล์ ให้คัดลอกทีละคำสั่ง" >&2
 exit 1
 
-# ── Lab 4.1 ใคร container ไหนกินทรัพยากร ────────────────────
+# ── Lab 4.1 container ไหนใช้ทรัพยากร ────────────────────────
 # บนเครื่อง mon
 docker compose up -d
 curl -s -X POST localhost:9090/-/reload
