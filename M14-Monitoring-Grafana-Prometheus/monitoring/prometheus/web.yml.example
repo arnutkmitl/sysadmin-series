@@ -1,0 +1,4 @@
+# /home/admin/monitoring/prometheus/web.yml
+# รหัสผ่านเก็บเป็น bcrypt hash สร้างด้วย htpasswd -nBC 10 "" | tr -d ':\n'
+basic_auth_users:
+  admin: $2y$10$แทนด้วย-hash-ของคุณ

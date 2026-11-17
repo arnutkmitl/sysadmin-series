@@ -1,0 +1,23 @@
+# /home/admin/monitoring/prometheus/recording_rules.yml
+# คำนวณล่วงหน้าทุก 1 นาที ให้ Dashboard และ Alert อ่านผลแทนการคำนวณซ้ำ
+groups:
+  - name: node-recording
+    interval: 1m
+    rules:
+      - record: instance:node_cpu_usage:percent5m
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+
+      - record: instance:node_memory_usage:percent
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100
+
+      - record: instance:node_filesystem_root_usage:percent
+        expr: 100 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100)
+
+  - name: shop-recording
+    interval: 1m
+    rules:
+      - record: job:shop_orders_failed:ratio5m
+        expr: sum(rate(shop_orders_total{status="failed"}[5m])) / sum(rate(shop_orders_total[5m]))
+
+      - record: job:shop_request_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(shop_request_duration_seconds_bucket[5m])))

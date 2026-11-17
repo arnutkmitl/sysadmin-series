@@ -1,0 +1,17 @@
+# /etc/systemd/system/nginx_exporter.service
+[Unit]
+Description=Prometheus nginx-prometheus-exporter
+After=network-online.target nginx.service
+Wants=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+ExecStart=/usr/local/bin/nginx-prometheus-exporter --nginx.scrape-uri=http://127.0.0.1:8080/stub_status --web.listen-address=:9113
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

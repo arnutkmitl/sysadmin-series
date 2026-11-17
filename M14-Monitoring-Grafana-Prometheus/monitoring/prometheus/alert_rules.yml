@@ -1,0 +1,137 @@
+# /home/admin/monitoring/prometheus/alert_rules.yml
+groups:
+  - name: node
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} ไม่ตอบ"
+          description: "Prometheus ดึง Metrics ของ {{ $labels.instance }} (job {{ $labels.job }}) ไม่ได้เกิน 1 นาที"
+
+      - alert: HighCpuUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU ของ {{ $labels.instance }} สูง {{ $value | printf \"%.0f\" }}%"
+          description: "CPU เกิน 80% ต่อเนื่อง 5 นาที"
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RAM ของ {{ $labels.instance }} ใช้ {{ $value | printf \"%.0f\" }}%"
+
+      - alert: DiskSpaceLow
+        expr: 100 - (node_filesystem_avail_bytes{fstype=~"xfs|ext4"} / node_filesystem_size_bytes{fstype=~"xfs|ext4"} * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ดิสก์ {{ $labels.mountpoint }} ของ {{ $labels.instance }} ใช้ {{ $value | printf \"%.0f\" }}%"
+
+      - alert: DiskSpaceCritical
+        expr: 100 - (node_filesystem_avail_bytes{fstype=~"xfs|ext4"} / node_filesystem_size_bytes{fstype=~"xfs|ext4"} * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ดิสก์ {{ $labels.mountpoint }} ของ {{ $labels.instance }} ใกล้เต็ม {{ $value | printf \"%.0f\" }}%"
+
+      - alert: DiskWillFillIn24h
+        expr: predict_linear(node_filesystem_avail_bytes{fstype=~"xfs|ext4"}[6h], 24 * 3600) < 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ดิสก์ {{ $labels.mountpoint }} ของ {{ $labels.instance }} จะเต็มภายใน 24 ชั่วโมงตามแนวโน้ม"
+
+      - alert: HighLoadAverage
+        expr: node_load5 / count without (cpu, mode) (node_cpu_seconds_total{mode="idle"}) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Load ของ {{ $labels.instance }} เกิน 2 เท่าของจำนวน CPU"
+
+      - alert: SystemdServiceFailed
+        expr: node_systemd_unit_state{state="failed"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "บริการ {{ $labels.name }} บน {{ $labels.instance }} อยู่ในสถานะ failed"
+
+      - alert: HostRebooted
+        expr: time() - node_boot_time_seconds < 600
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: "{{ $labels.instance }} เพิ่งเปิดเครื่องใหม่"
+
+      - alert: NetworkReceiveErrors
+        expr: rate(node_network_receive_errs_total{device!="lo"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "การ์ด {{ $labels.device }} ของ {{ $labels.instance }} รับข้อมูลผิดพลาด"
+
+  - name: services
+    rules:
+      - alert: WebsiteDown
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.instance }} เปิดไม่ได้จากมุมผู้ใช้"
+
+      - alert: MariaDBDown
+        expr: mysql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MariaDB บน {{ $labels.instance }} ไม่ตอบ exporter"
+
+      - alert: BackupTooOld
+        expr: time() - backup_last_run_timestamp_seconds > 26 * 3600 or backup_success == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "งาน backup ของ {{ $labels.instance }} ไม่สำเร็จหรือไม่ได้รันเกิน 26 ชั่วโมง"
+
+      - alert: ShopHighErrorRate
+        expr: sum(rate(shop_orders_total{status="failed"}[5m])) / sum(rate(shop_orders_total[5m])) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "คำสั่งซื้อล้มเหลว {{ $value | printf \"%.1f\" }}%"
+
+      - alert: SSLCertExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "ใบรับรองของ {{ $labels.instance }} หมดอายุใน {{ $value | printf \"%.0f\" }} วัน"
+
+  - name: monitoring
+    rules:
+      - alert: NotificationsFailing
+        expr: sum by (integration) (rate(alertmanager_notifications_failed_total[5m])) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Alertmanager ส่งผ่าน {{ $labels.integration }} ไม่สำเร็จ"

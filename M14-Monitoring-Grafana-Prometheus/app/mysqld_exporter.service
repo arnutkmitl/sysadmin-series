@@ -1,0 +1,17 @@
+# /etc/systemd/system/mysqld_exporter.service
+[Unit]
+Description=Prometheus mysqld_exporter
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+User=mysqld_exporter
+Group=mysqld_exporter
+ExecStart=/usr/local/bin/mysqld_exporter --config.my-cnf=/etc/mysqld_exporter/my.cnf --web.listen-address=:9104
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

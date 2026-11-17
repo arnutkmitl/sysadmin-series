@@ -1,0 +1,4 @@
+{{/* /home/admin/monitoring/alertmanager/templates/m14.tmpl */}}
+{{ define "telegram.m14" }}{{ range .Alerts }}{{ if eq .Status "firing" }}🔥 FIRING{{ else }}✅ RESOLVED{{ end }} <b>{{ .Labels.alertname }}</b> [{{ .Labels.severity }}]
+{{ .Annotations.summary }}
+{{ end }}{{ end }}

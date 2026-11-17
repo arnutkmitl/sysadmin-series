@@ -1,0 +1,152 @@
+# /home/admin/monitoring/docker-compose.yml
+# Monitoring stack ของ M14 ฉบับสุดท้าย (บทที่ 1 ถึง 6)
+services:
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+      - --web.external-url=http://192.168.56.55:9090
+      - --web.config.file=/etc/prometheus/web.yml
+      - --web.enable-admin-api
+      - --storage.tsdb.retention.size=5GB
+    volumes:
+      - ./prometheus:/etc/prometheus:ro,Z
+      - prometheus-data:/prometheus
+    secrets:
+      - prometheus_password
+      - push_password
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:v1.12.1
+    container_name: node-exporter
+    command:
+      - --path.rootfs=/host
+    volumes:
+      - /:/host:ro,rslave
+    pid: host
+    network_mode: host
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+    secrets:
+      - grafana_admin_password
+      - prometheus_password
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro,Z
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro,Z
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:v0.35.0
+    container_name: alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --web.external-url=http://192.168.56.55:9093
+    volumes:
+      - ./alertmanager:/etc/alertmanager:ro,Z
+      - alertmanager-data:/alertmanager
+    secrets:
+      - telegram_bot_token
+    ports:
+      - "9093:9093"
+    restart: unless-stopped
+
+  line-bridge:
+    image: python:3.14-alpine
+    container_name: line-bridge
+    command: ["python", "-u", "/app/bridge.py"]
+    environment:
+      LINE_TOKEN_FILE: /run/secrets/line_channel_token
+      LINE_TO: ${LINE_TO}
+    secrets:
+      - line_channel_token
+    volumes:
+      - ./line-bridge:/app:ro,Z
+    restart: unless-stopped
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.61.0
+    container_name: cadvisor
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=15s
+      - --store_container_labels=false
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.29.1
+    container_name: blackbox
+    command:
+      - --config.file=/etc/blackbox/blackbox.yml
+    volumes:
+      - ./blackbox:/etc/blackbox:ro,Z
+    restart: unless-stopped
+
+  pushgateway:
+    image: prom/pushgateway:v1.11.4
+    container_name: pushgateway
+    command:
+      - --web.config.file=/etc/pushgateway/web.yml
+      - --persistence.file=/data/metrics.store
+      - --persistence.interval=1m
+    volumes:
+      - ./pushgateway:/etc/pushgateway:ro,Z
+      - pushgateway-data:/data
+    ports:
+      - "9091:9091"
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:v1.33.1
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+
+secrets:
+  prometheus_password:
+    file: ./secrets/prometheus_password
+  push_password:
+    file: ./secrets/push_password
+  grafana_admin_password:
+    file: ./secrets/grafana_admin_password
+  line_channel_token:
+    file: ./secrets/line_channel_token
+  telegram_bot_token:
+    file: ./secrets/telegram_bot_token
+
+volumes:
+  pushgateway-data:
+  prometheus-data:
+  grafana-data:
+  alertmanager-data:

@@ -1,0 +1,9 @@
+# /home/admin/monitoring/grafana/provisioning/dashboards/m14.yml
+apiVersion: 1
+providers:
+  - name: m14
+    folder: M14
+    type: file
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

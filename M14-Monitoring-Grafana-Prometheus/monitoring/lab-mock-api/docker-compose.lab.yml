@@ -1,0 +1,17 @@
+# ใช้เฉพาะใน Lab: เพิ่มปลายทางจำลองแทน api.telegram.org และ api.line.me
+# docker compose -f docker-compose.yml -f lab-mock-api/docker-compose.lab.yml up -d
+services:
+  lab-mock-api:
+    image: python:3.14-alpine
+    container_name: lab-mock-api
+    command: ["python", "-u", "/app/mock.py"]
+    volumes:
+      - ./lab-mock-api:/app:ro,Z
+  line-bridge:
+    environment:
+      LINE_API: http://lab-mock-api:8080/v2/bot/message/push
+  alertmanager:
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.lab.yml
+      - --storage.path=/alertmanager
+      - --web.external-url=http://192.168.56.55:9093

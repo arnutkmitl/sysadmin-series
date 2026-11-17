@@ -1,0 +1,14 @@
+# /etc/systemd/system/shop.service
+[Unit]
+Description=Demo shop app with Prometheus metrics
+After=network-online.target
+
+[Service]
+User=shop
+Group=shop
+WorkingDirectory=/opt/shop
+ExecStart=/opt/shop/venv/bin/python /opt/shop/shop.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
