@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightly backup of prod (database dumps, Docker, restic, borg)
+Wants=network-online.target
+After=network-online.target mariadb.service postgresql.service docker.service
+
+[Service]
+Type=oneshot
+# systemd ไม่ตั้ง HOME ให้บริการ restic จึงหาโฟลเดอร์ cache ไม่เจอและหยุดทำงาน
+Environment=HOME=/root
+# ปลายทางของ LINE ใน Lab คือปลายทางจำลองบน bkp ระบบจริงลบบรรทัดนี้ทิ้ง
+Environment=LINE_API=http://192.168.56.86:8099/v2/bot/message/push
+ExecStart=/usr/local/sbin/backup-and-notify.sh
+# ค่าเริ่มต้นของ oneshot คือรอไม่มีกำหนด ตั้งเพดานไว้ไม่ให้งานค้างข้ามไปถึงรอบถัดไป
+TimeoutStartSec=6h
+Nice=10
+IOSchedulingClass=idle

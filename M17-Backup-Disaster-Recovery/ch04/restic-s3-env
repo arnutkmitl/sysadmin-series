@@ -1,0 +1,6 @@
+# /root/.config/restic/s3-env บน prod: restic ไป bucket restic-prod บน SeaweedFS (สำเนา offsite ในเล่ม)
+# โหลดด้วย: source /root/.config/restic/s3-env
+export RESTIC_REPOSITORY=s3:http://192.168.56.86:8333/restic-prod/prod
+export AWS_ACCESS_KEY_ID=$(sed -n 1p /root/.restic-s3-key)
+export AWS_SECRET_ACCESS_KEY=$(sed -n 2p /root/.restic-s3-key)
+export RESTIC_PASSWORD_FILE=/root/.restic-pass

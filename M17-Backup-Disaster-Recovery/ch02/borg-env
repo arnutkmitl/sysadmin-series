@@ -1,0 +1,6 @@
+# /root/.config/borg-env บน prod: ค่าที่ทุกคำสั่ง borg ใช้ร่วมกัน
+# โหลดด้วย: source /root/.config/borg-env
+export BORG_REPO=ssh://backup@192.168.56.86:2222/srv/backup/borg/prod
+export BORG_RSH="ssh -i /root/.ssh/id_borg"
+# passphrase เก็บในไฟล์ที่ root อ่านได้คนเดียว (chmod 600) และต้องมีสำเนาอยู่นอกเครื่อง prod
+export BORG_PASSCOMMAND="cat /root/.borg-pass"

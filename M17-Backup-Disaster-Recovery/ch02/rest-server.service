@@ -1,0 +1,20 @@
+[Unit]
+Description=restic rest-server (append-only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=restic
+Group=restic
+ExecStart=/usr/local/bin/rest-server --path /srv/backup/restic --listen :8000 \
+          --append-only --private-repos \
+          --tls --tls-cert /etc/rest-server/tls.crt --tls-key /etc/rest-server/tls.key \
+          --htpasswd-file /etc/rest-server/.htpasswd
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/srv/backup/restic
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

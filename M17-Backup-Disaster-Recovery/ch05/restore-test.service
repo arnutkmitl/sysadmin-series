@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekly restore test of prod backups
+After=network-online.target mariadb.service postgresql.service
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+Environment=LINE_API=http://192.168.56.86:8099/v2/bot/message/push
+ExecStart=/usr/local/sbin/restore-test.sh

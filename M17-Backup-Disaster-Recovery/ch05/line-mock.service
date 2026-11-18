@@ -1,0 +1,9 @@
+[Unit]
+Description=LINE Messaging API mock for the lab (logs to /var/log/line-mock.log)
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/local/bin/line_mock.py 8099 /var/log/line-mock.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

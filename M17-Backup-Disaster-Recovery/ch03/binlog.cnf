@@ -1,0 +1,7 @@
+# /etc/my.cnf.d/binlog.cnf บน prod: เปิด binary log สำหรับ Point-in-Time Recovery
+[mariadbd]
+server_id = 85
+log_bin = /var/lib/mysql/binlog
+binlog_format = ROW
+# เก็บ binlog 14 วัน ต้องยาวกว่าช่วงระหว่าง full backup สองครั้งเสมอ
+binlog_expire_logs_seconds = 1209600

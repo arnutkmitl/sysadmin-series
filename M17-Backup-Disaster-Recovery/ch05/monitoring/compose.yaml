@@ -1,0 +1,35 @@
+# /opt/monitoring/compose.yaml บน bkp: Prometheus + Grafana สำหรับเฝ้าสุขภาพ backup (แบบย่อของ M14)
+services:
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=30d
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro,Z
+      - ./backup-alerts.yml:/etc/prometheus/backup-alerts.yml:ro,Z
+      - prom_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin
+    secrets:
+      - grafana_admin
+    volumes:
+      - ./grafana:/etc/grafana/provisioning:ro,Z
+      - grafana_data:/var/lib/grafana
+
+secrets:
+  grafana_admin:
+    file: ./grafana_admin.txt
+
+volumes:
+  prom_data:
+  grafana_data:

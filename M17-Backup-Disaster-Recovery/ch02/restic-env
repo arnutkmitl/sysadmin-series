@@ -1,0 +1,7 @@
+# /root/.config/restic/env บน prod: ค่าที่ทุกคำสั่ง restic ใช้ร่วมกัน
+# โหลดด้วย: source /root/.config/restic/env
+export RESTIC_REPOSITORY=rest:https://192.168.56.86:8000/prod/
+export RESTIC_REST_USERNAME=prod
+export RESTIC_REST_PASSWORD=$(cat /root/.restic-rest-pass)
+export RESTIC_PASSWORD_FILE=/root/.restic-pass
+export RESTIC_CACERT=/root/.config/restic/bkp-tls.crt

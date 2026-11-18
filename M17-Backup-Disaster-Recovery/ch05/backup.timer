@@ -1,0 +1,12 @@
+[Unit]
+Description=Run backup.service every night
+
+[Timer]
+OnCalendar=*-*-* 01:30
+# เลื่อนเวลาเริ่มแบบสุ่มไม่เกิน 15 นาที เครื่องหลายเครื่องจะได้ไม่ส่ง backup พร้อมกัน
+RandomizedDelaySec=15min
+# ถ้าเครื่องปิดอยู่ตอน 01:30 ให้รันทันทีที่เปิดเครื่อง
+Persistent=true
+
+[Install]
+WantedBy=timers.target

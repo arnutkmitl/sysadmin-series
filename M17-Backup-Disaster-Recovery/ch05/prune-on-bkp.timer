@@ -1,0 +1,9 @@
+[Unit]
+Description=Run prune-on-bkp.service every Saturday
+
+[Timer]
+OnCalendar=Sat *-*-* 05:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

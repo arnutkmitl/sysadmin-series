@@ -1,0 +1,34 @@
+groups:
+  - name: backup
+    rules:
+      # งานใดล้มเหลวในรอบล่าสุด
+      - alert: BackupJobFailed
+        expr: backup_last_status != 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "backup งาน {{ $labels.task }} บน {{ $labels.instance }} ล้มเหลวในรอบล่าสุด"
+
+      # backup ไม่สำเร็จเกิน 26 ชั่วโมง: จับกรณีที่สคริปต์ไม่ได้รันเลย ซึ่ง BackupJobFailed มองไม่เห็น
+      - alert: BackupTooOld
+        expr: time() - backup_last_success_timestamp_seconds > 26 * 3600
+        labels:
+          severity: critical
+        annotations:
+          summary: "backup งาน {{ $labels.task }} ไม่สำเร็จมา {{ $value | humanizeDuration }}"
+
+      # node_exporter บน prod หายไป metric ข้างบนจะหยุดอัปเดตโดยไม่มีใครรู้
+      - alert: BackupMetricsMissing
+        expr: absent(backup_last_status)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ไม่พบ metric ของ backup จาก prod"
+
+      - alert: RestoreTestFailed
+        expr: restore_test_last_status != 0 or time() - restore_test_last_run_timestamp_seconds > 8 * 86400
+        labels:
+          severity: warning
+        annotations:
+          summary: "การทดสอบกู้คืนรายสัปดาห์ไม่ผ่านหรือไม่ได้รัน"

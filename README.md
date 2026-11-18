@@ -2,7 +2,7 @@
 
 ไฟล์ประกอบหนังสือชุด SysAdmin Pocket Series โดย ดร.อาณัติ รัตนถิรกุล (อ.หมวกแดง) สำนักพิมพ์ SysAdmin Knowledge Press
 แต่ละเล่มมีโฟลเดอร์ของตัวเอง ภายในมีคำสั่งทุกบรรทัดในเล่ม ไฟล์ตั้งค่า และสคริปต์ เรียงตามบทเดียวกับหนังสือ
-ตอนนี้ดาวน์โหลดได้ 16 จาก 17 เล่ม
+ตอนนี้ดาวน์โหลดได้ 17 จาก 17 เล่ม
 
 ## รายชื่อเล่ม
 
@@ -24,7 +24,7 @@
 | M14 | Monitoring with Grafana & Prometheus: สร้างระบบ Monitoring จาก 0 ใน 1 วัน | [`M14-Monitoring-Grafana-Prometheus/`](M14-Monitoring-Grafana-Prometheus/) | ดาวน์โหลดได้ |
 | M15 | Ansible Automation: จัดการ Server 10 เครื่องเหมือน 1 เครื่อง | [`M15-Ansible-Automation/`](M15-Ansible-Automation/) | ดาวน์โหลดได้ |
 | M16 | Reverse Proxy & Load Balancer: Nginx, HAProxy, Traefik ครบใน 1 วัน | [`M16-Reverse-Proxy-Load-Balancer/`](M16-Reverse-Proxy-Load-Balancer/) | ดาวน์โหลดได้ |
-| M17 | Backup & Disaster Recovery: อย่าให้ข้อมูลหายเป็นอันขาด | `M17-Backup-Disaster-Recovery/` | กำลังจัดทำ |
+| M17 | Backup & Disaster Recovery: สำรองทุกคืน ซ้อมกู้จนจับเวลาได้ | [`M17-Backup-Disaster-Recovery/`](M17-Backup-Disaster-Recovery/) | ดาวน์โหลดได้ |
 
 ## วิธีดาวน์โหลด
 

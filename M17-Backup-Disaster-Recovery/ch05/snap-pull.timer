@@ -1,0 +1,9 @@
+[Unit]
+Description=Run snap-pull.service every night after prod's own backup
+
+[Timer]
+OnCalendar=*-*-* 02:30
+Persistent=true
+
+[Install]
+WantedBy=timers.target

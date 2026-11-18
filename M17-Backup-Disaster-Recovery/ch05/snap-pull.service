@@ -1,0 +1,7 @@
+[Unit]
+Description=Pull a hard-link snapshot of prod:/srv
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/snap-pull.sh
