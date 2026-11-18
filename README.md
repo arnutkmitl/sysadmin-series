@@ -8,7 +8,7 @@
 
 | เล่ม | ชื่อเรื่อง | โฟลเดอร์ | สถานะ |
 |---|---|---|---|
-| M01 | Linux Server Quickstart: ติดตั้ง Server จริงใน 1 วัน | [`M01-Linux-Server-Quickstart/`](M01-Linux-Server-Quickstart/) | ดาวน์โหลดได้ |
+| M01 | Linux Server Essentials: คู่มือติดตั้งและบริหารเซิร์ฟเวอร์ Linux ฉบับลงมือปฏิบัติจริง | [`M01-Linux-Server-Essentials/`](M01-Linux-Server-Essentials/) | ดาวน์โหลดได้ |
 | M02 | Network & Firewall Essentials: ตั้งค่าเครือข่ายและปิดช่องโหว่ใน 1 วัน | [`M02-Network-Firewall-Essentials/`](M02-Network-Firewall-Essentials/) | ดาวน์โหลดได้ |
 | M03 | Shell Script Automation: เปลี่ยนงานซ้ำ ๆ เป็น Script อัตโนมัติใน 1 วัน | [`M03-Shell-Script-Automation/`](M03-Shell-Script-Automation/) | ดาวน์โหลดได้ |
 | M04 | Python for SysAdmin: เปลี่ยนงาน Admin ให้เป็น Python อัตโนมัติใน 1 วัน | [`M04-Python-for-SysAdmin/`](M04-Python-for-SysAdmin/) | ดาวน์โหลดได้ |

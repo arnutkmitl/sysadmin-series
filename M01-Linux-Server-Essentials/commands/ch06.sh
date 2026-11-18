@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # บทที่ 6 อัปเดตและ Backup ก่อนเปิดให้โลกเข้าถึง
-# SysAdmin Pocket Series M01 Linux Server Quickstart ฉบับปรับปรุง (Rocky Linux 10.2)
+# SysAdmin Pocket Series M01 Linux Server Essentials (Rocky Linux 10.2)
 #
 # ไฟล์นี้รวมคำสั่งตามลำดับในเล่ม ไม่ใช่สคริปต์ ให้คัดลอกไปรันทีละคำสั่งพร้อมอ่านคำอธิบายในเล่ม
 # คำสั่งที่ไม่มีป้ายรันบน server ส่วนบรรทัดที่มีป้าย [Host PC] รันใน PowerShell บน Windows
